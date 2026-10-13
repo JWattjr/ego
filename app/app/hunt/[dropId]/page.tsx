@@ -2,6 +2,7 @@
 import { Suspense, use, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowUp, Flag, LocateFixed, Navigation, X } from "lucide-react";
+import NumberFlow from "@number-flow/react";
 import { DropMap } from "@/components/map-loader";
 import { Coin, ErrorMessage, HoldButton, Loading, ReportDialog } from "@/components/ui";
 import { Coin3D } from "@/components/coin3d-loader";
@@ -199,7 +200,7 @@ function Hunt({ dropId }: { dropId: string }) {
               )}
               <div className="dial-face" role="status" aria-live="polite">
                 <span className="amount">
-                  {drop.distanceM ?? "—"}
+                  {drop.distanceM === undefined ? "—" : <NumberFlow value={drop.distanceM} />}
                   <span className="cur">m</span>
                 </span>
                 <span className={`dial-trend ${trend === "colder" ? "cold" : ""}`}>{trendText}</span>
@@ -219,7 +220,7 @@ function Hunt({ dropId }: { dropId: string }) {
           {drop.claimed && <ErrorMessage message="Someone already found this one. There are more on the map." />}
 
           <div className="hunt-map">
-            <DropMap drops={[drop]} selectedId={drop.dropId} position={position} exact={near ? drop.exact : undefined} center={drop.approx} zoom={16} />
+            <DropMap drops={[drop]} selectedId={drop.dropId} position={position} exact={near ? drop.exact : undefined} center={drop.approx} zoom={16} heading={heading} route={position && target ? { from: position, to: target } : undefined} />
           </div>
 
           <div className="hunt-tools">

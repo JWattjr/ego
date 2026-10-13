@@ -1013,3 +1013,33 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: color-m
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-old(*), ::view-transition-new(*), ::view-transition-group(*) { animation-duration: 0s !important; animation-delay: 0s !important; }
 }
+
+/* Rolling digits (NumberFlow) inherit the amount styles */
+.amount number-flow-react { font-variant-numeric: tabular-nums; }
+
+/* Shimmering placeholders */
+.skeleton { display: grid; gap: 12px; padding: 6px 0; }
+.skeleton-row { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 18px; background: var(--surface); box-shadow: var(--shadow-sm); }
+.skeleton-dot { width: 38px; height: 38px; border-radius: 12px; flex: none; }
+.skeleton-lines { flex: 1; display: grid; gap: 8px; }
+.skeleton-lines span { height: 10px; border-radius: 6px; }
+.skeleton-dot, .skeleton-lines span {
+  background: linear-gradient(90deg, #edf1f7 0%, #f7f9fc 40%, #edf1f7 80%) 0 0 / 200% 100%;
+  animation: shimmer 1.3s linear infinite;
+}
+@keyframes shimmer { to { background-position: -200% 0; } }
+
+/* You on the map: dot + direction cone */
+.me-wrap { position: relative; width: 0; height: 0; }
+.me-wrap .me-pin { position: absolute; left: 0; top: 0; }
+.me-cone {
+  position: absolute;
+  left: -32px;
+  top: -32px;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: conic-gradient(from -28deg, rgba(31, 107, 255, 0.38) 0deg, rgba(31, 107, 255, 0) 56deg, transparent 56deg);
+  mask: radial-gradient(closest-side, #000 60%, transparent);
+  transition: transform 300ms var(--ease-out);
+}

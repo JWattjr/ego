@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import L from "leaflet";
-import { Circle, CircleMarker, MapContainer, Marker, TileLayer, useMap, useMapEvents } from "react-leaflet";
+import { Circle, CircleMarker, MapContainer, Marker, Polyline, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import type { DropPublic, Position } from "@/lib/types";
 import { egoMapStyle } from "@/lib/map-style";
 import "maplibre-gl/dist/maplibre-gl.css";
@@ -13,7 +13,13 @@ const coinHtml = (label?: string, cls = "") =>
   }</div>`;
 const coinIcon = (label?: string, cls = "") =>
   L.divIcon({ className: "coin-pin", html: coinHtml(label, cls), iconSize: [0, 0] });
-const meIcon = L.divIcon({ className: "coin-pin", html: '<div class="me-pin"></div>', iconSize: [0, 0] });
+// You: a blue dot, plus a soft cone showing which way you're facing when the compass is on.
+const meIcon = (heading?: number | null) =>
+  L.divIcon({
+    className: "coin-pin",
+    html: `<div class="me-wrap">${heading == null ? "" : `<div class="me-cone" style="transform: rotate(${Math.round(heading)}deg)"></div>`}<div class="me-pin"></div></div>`,
+    iconSize: [0, 0],
+  });
 
 // Crisp vector base map (MapLibre inside Leaflet). Falls back to raster OSM tiles if WebGL or the style fails.
 function VectorBase() {
@@ -28,7 +34,7 @@ function VectorBase() {
         layer.addTo(map);
         // Dev only: lets tooling force a draw while the tab is hidden.
         if (process.env.NODE_ENV === "development") (window as unknown as { __egoMap?: unknown }).__egoMap = (layer as unknown as { getMaplibreMap(): unknown }).getMaplibreMap();
-        map.attributionControl?.addAttribution('&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> · <a href="https://openfreemap.org">OpenFreeMap</a>');
+        // The style carries its own OpenFreeMap / OpenMapTiles / OpenStreetMap credits.
       })
       .catch(() => live && setFailed(true));
     return () => {
@@ -79,6 +85,8 @@ export default function DropMap({
   picked,
   areas = [],
   dots = [],
+  route,
+  heading,
 }: {
   drops?: DropPublic[];
   onSelect?: (d: DropPublic) => void;
@@ -92,6 +100,8 @@ export default function DropMap({
   picked?: { lat: number; lng: number };
   areas?: { lat: number; lng: number; radiusM: number }[]; // Hide money: chosen areas
   dots?: { lat: number; lng: number }[]; // Hide money: preview of where drops will land
+  route?: { from: { lat: number; lng: number }; to: { lat: number; lng: number } }; // dotted line to the selected drop
+  heading?: number | null; // compass heading in degrees, for the direction cone
 }) {
   return (
     <MapContainer
@@ -143,7 +153,13 @@ export default function DropMap({
         <CircleMarker key={`dot-${i}`} center={[d.lat, d.lng]} radius={3.5} pathOptions={{ color: "#fff", weight: 1, fillColor: "#1f6bff", fillOpacity: 1 }} />
       ))}
       {picked && <Marker position={[picked.lat, picked.lng]} icon={coinIcon("Your drop", "big")} />}
-      {position && <Marker position={[position.lat, position.lng]} icon={meIcon} title="You" />}
+      {route && (
+        <Polyline
+          positions={[[route.from.lat, route.from.lng], [route.to.lat, route.to.lng]]}
+          pathOptions={{ color: "#1f6bff", weight: 4, opacity: 0.85, dashArray: "1 9", lineCap: "round" }}
+        />
+      )}
+      {position && <Marker position={[position.lat, position.lng]} icon={meIcon(heading)} title="You" />}
     </MapContainer>
   );
 }

@@ -12,6 +12,7 @@ import {
   Sun,
   X,
 } from "lucide-react";
+import NumberFlow from "@number-flow/react";
 import type { Collectible, DropKind } from "@/lib/types";
 import { useDialogFocus } from "./dialog-focus";
 
@@ -83,13 +84,18 @@ export function Amount({
   prefix?: string;
 }) {
   const n = BigInt(base),
-    whole = (n / 1000000n).toLocaleString("en-US"),
-    dec = ((n % 1000000n) / 10000n).toString().padStart(2, "0");
+    whole = Number(n / 1000000n),
+    cents = Number((n % 1000000n) / 10000n);
+  // Digits roll when the amount changes, like a banking app.
   return (
     <span className={`amount ${className}`}>
       {prefix}
-      {hidden ? "••••" : whole}
-      {!hidden && <span className="dec">.{dec}</span>}
+      {hidden ? "••••" : <NumberFlow value={whole} format={{ useGrouping: true }} />}
+      {!hidden && (
+        <span className="dec">
+          .<NumberFlow value={cents} format={{ minimumIntegerDigits: 2 }} />
+        </span>
+      )}
       {currency && <span className="cur">{currency}</span>}
     </span>
   );
@@ -125,10 +131,19 @@ export function Loading({
 }: {
   text?: string;
 }) {
+  // Shimmering placeholder rows instead of a line of text; the text stays for screen readers.
   return (
-    <div className="loading" role="status">
-      <span className="loading-dot" />
-      {text}
+    <div className="skeleton" role="status">
+      <span className="sr-only">{text}</span>
+      {[0, 1, 2].map((i) => (
+        <div key={i} className="skeleton-row" aria-hidden="true">
+          <span className="skeleton-dot" />
+          <span className="skeleton-lines">
+            <span style={{ width: `${70 - i * 12}%` }} />
+            <span style={{ width: `${45 - i * 6}%` }} />
+          </span>
+        </div>
+      ))}
     </div>
   );
 }

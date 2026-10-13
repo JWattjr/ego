@@ -13,6 +13,7 @@
     "@fontsource/dm-sans": "^5.2.8",
     "@fontsource/manrope": "^5.2.8",
     "@maplibre/maplibre-gl-leaflet": "^0.1.4",
+    "@number-flow/react": "^0.6.2",
     "@react-three/fiber": "^9.8.1",
     "@zxing/browser": "^0.1.5",
     "leaflet": "^1.9.4",

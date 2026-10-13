@@ -1,7 +1,8 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { ArrowRight, LocateFixed, Minus, Plus, ScanFace, ShieldCheck, X } from "lucide-react";
+import NumberFlow from "@number-flow/react";
 import { DropMap } from "@/components/map-loader";
 import { Coin, ErrorMessage } from "@/components/ui";
 import { confirmCampaign, createCampaign, submitDeposit, USE_MOCKS } from "@/lib/api";
@@ -28,28 +29,6 @@ function scatter(area: Area, n: number, seed: number) {
 }
 // Split n drops across areas as evenly as possible.
 const split = (n: number, k: number) => Array.from({ length: k }, (_, i) => Math.floor(n / k) + (i < n % k ? 1 : 0));
-
-function useCountUp(value: number) {
-  const [shown, setShown] = useState(value);
-  const from = useRef(value);
-  useEffect(() => {
-    const start = performance.now(), a = from.current, reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce) return setShown(value);
-    let raf = 0;
-    const tick = (t: number) => {
-      const p = Math.min((t - start) / 450, 1), eased = 1 - Math.pow(1 - p, 3);
-      setShown(Math.round(a + (value - a) * eased));
-      if (p < 1) raf = requestAnimationFrame(tick);
-      else from.current = value;
-    };
-    raf = requestAnimationFrame(tick);
-    return () => {
-      cancelAnimationFrame(raf);
-      from.current = value;
-    };
-  }, [value]);
-  return shown;
-}
 
 async function placeName(lat: number, lng: number) {
   try {
@@ -81,7 +60,6 @@ export default function HideMoneyPage() {
 
   const drops = tiers.reduce((s, t) => s + t.count, 0);
   const total = tiers.reduce((s, t) => s + t.amount * t.count, 0);
-  const shownTotal = useCountUp(total);
   const perArea = split(drops, Math.max(areas.length, 1));
   const dots = useMemo(() => areas.flatMap((a, i) => scatter(a, perArea[i], i).map((p) => ({ ...p, area: i }))), [areas, perArea.join(",")]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -164,7 +142,7 @@ export default function HideMoneyPage() {
       </header>
 
       <section className="hide-amount" aria-live="polite">
-        <span className="amount">${shownTotal.toLocaleString()}</span>
+        <span className="amount">$<NumberFlow value={total} format={{ useGrouping: true }} /></span>
         <span>USDC, hidden in {drops.toLocaleString()} {drops === 1 ? "drop" : "drops"}</span>
       </section>
 

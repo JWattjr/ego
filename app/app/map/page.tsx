@@ -45,6 +45,7 @@ export default function MapPage() {
         center={selected?.approx ?? gps.position ?? ENUGU}
         zoom={15}
         offsetY={selected ? 170 : 0}
+        route={selected?.approx && gps.position ? { from: gps.position, to: selected.approx } : undefined}
       />
 
       <div className="map-top">
