@@ -1,7 +1,8 @@
 "use client";
 import Link from "next/link";
 import { use, useEffect, useState } from "react";
-import { Check, ExternalLink, Share2, Zap } from "lucide-react";
+import { Check, Download, ExternalLink, Share2, X, Zap } from "lucide-react";
+import { shareCard } from "@/lib/share-card";
 import { getFound, USE_MOCKS } from "@/lib/api";
 import type { FoundView } from "@/lib/types";
 import { money } from "@/lib/format";
@@ -18,7 +19,9 @@ export default function FoundPage({ params }: { params: Promise<{ dropId: string
   const { dropId } = use(params),
     [view, setView] = useState<FoundView | null>(null),
     [loading, setLoading] = useState(true),
-    [shared, setShared] = useState(false);
+    [shared, setShared] = useState(false),
+    [card, setCard] = useState<string | null>(null),
+    [making, setMaking] = useState(false);
   useEffect(() => {
     getFound(dropId).then(setView).finally(() => setLoading(false));
   }, [dropId]);
@@ -38,14 +41,21 @@ export default function FoundPage({ params }: { params: Promise<{ dropId: string
     const text = prize
       ? `I just claimed my ${amount} USDC prize from ${view.drop.creatorName} on Ego. Paid on Arc in ${(view.confirmedMs / 1000).toFixed(1)} s.`
       : `I just found ${amount} USDC hidden in ${view.drop.title} on Ego. Confirmed on Arc in ${(view.confirmedMs / 1000).toFixed(1)} s.`;
+    setMaking(true);
     try {
-      if (navigator.share) await navigator.share({ text, url: view.explorerUrl });
-      else {
-        await navigator.clipboard.writeText(`${text} ${view.explorerUrl}`);
+      // Share the image card where the phone supports it; otherwise show it to save.
+      const blob = await shareCard(view, window.location.origin);
+      const file = new File([blob], "ego-find.png", { type: "image/png" });
+      if (navigator.canShare?.({ files: [file] })) await navigator.share({ files: [file], text: `${text} ${window.location.origin}` });
+      else setCard(URL.createObjectURL(blob));
+    } catch (e) {
+      if ((e as Error).name !== "AbortError") {
+        // Last resort: copy the text.
+        await navigator.clipboard?.writeText(`${text} ${view.explorerUrl}`).catch(() => undefined);
         setShared(true);
       }
-    } catch {
-      /* the person closed the share sheet */
+    } finally {
+      setMaking(false);
     }
   };
 
@@ -94,7 +104,7 @@ export default function FoundPage({ params }: { params: Promise<{ dropId: string
         <CollectibleCard item={view.collectible} />
         <div className="found-actions">
           <button className="button secondary" onClick={share}>
-            <Share2 size={18} /> {shared ? "Copied" : "Share"}
+            <Share2 size={18} /> {making ? "Making…" : shared ? "Copied" : "Share"}
           </button>
           <Link href={prize ? "/prizes" : "/map"} className="button primary">{prize ? "My prizes" : "Keep hunting"}</Link>
         </div>
@@ -102,6 +112,16 @@ export default function FoundPage({ params }: { params: Promise<{ dropId: string
           View on Arc Explorer <ExternalLink size={13} />
         </a>
       </section>
+      {card && (
+        <div className="dialog-backdrop" onClick={() => setCard(null)}>
+          <div className="share-preview" role="dialog" aria-label="Your share card" onClick={(e) => e.stopPropagation()}>
+            <button className="icon-button dialog-close" aria-label="Close" onClick={() => setCard(null)}><X size={18} /></button>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={card} alt={`Share card: I ${prize ? "won" : "found"} ${amount} USDC`} />
+            <a className="button primary" href={card} download="ego-find.png"><Download size={18} /> Save image</a>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

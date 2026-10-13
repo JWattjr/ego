@@ -5,6 +5,7 @@ import { useState, ViewTransition } from "react";
 import { ArrowUpDown, Coins, Compass, PiggyBank, Plus } from "lucide-react";
 import { USE_MOCKS } from "@/lib/api";
 import { CreateSheet } from "./create-sheet";
+import { Onboarding } from "./onboarding";
 
 const tabs = [
   { href: "/", label: "Home", icon: Coins, match: (p: string) => p === "/" || p.startsWith("/wallet") || p.startsWith("/swap") },
@@ -67,6 +68,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
           </nav>
         )}
         {creating && <CreateSheet onClose={() => setCreating(false)} />}
+        {path === "/" && <Onboarding />}
       </div>
     </div>
   );

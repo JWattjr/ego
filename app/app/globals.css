@@ -1076,3 +1076,30 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: color-m
   animation-delay: calc(var(--pulse, 1.8s) / 2);
 }
 .dial-orbit.hot .coin-marker::before, .dial-orbit.hot .coin-marker::after { border-color: rgba(31, 107, 255, 0.6); border-width: 2.5px; }
+
+/* ───────────────────────── Onboarding ───────────────────────── */
+.onboarding {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: grid;
+  grid-template-rows: 1fr auto auto auto;
+  padding: 20px 0 28px;
+  background:
+    radial-gradient(70% 45% at 50% 22%, #cfe0ff 0%, transparent 70%),
+    linear-gradient(180deg, #f4f7fd, #e9eef6);
+  animation: fade-in 300ms ease-out;
+}
+.onboarding-skip { position: absolute; top: 18px; right: 18px; z-index: 2; border: 0; background: var(--glass); backdrop-filter: blur(12px); padding: 8px 14px; border-radius: 999px; font-weight: 600; font-size: 14px; color: var(--ink-2); box-shadow: var(--shadow-sm); }
+.onboarding-coin { display: grid; place-items: center; align-self: end; }
+.onboarding-track { display: grid; grid-auto-flow: column; grid-auto-columns: 100%; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; }
+.onboarding-track::-webkit-scrollbar { display: none; }
+.onboarding-slide { scroll-snap-align: center; display: grid; gap: 10px; align-content: start; padding: 18px 32px 8px; text-align: center; }
+.onboarding-slide h1 { font-size: 32px; font-weight: 800; line-height: 1.05; }
+.onboarding-slide p { color: var(--ink-2); font-size: 15.5px; }
+.onboarding-dots { display: flex; justify-content: center; gap: 8px; padding: 14px 0 18px; }
+.onboarding-dots button { width: 8px; height: 8px; padding: 0; border: 0; border-radius: 999px; background: rgba(15, 30, 60, 0.18); transition: width 260ms var(--ease-out), background-color 200ms ease; }
+.onboarding-dots button.on { width: 24px; background: var(--blue); }
+.onboarding-actions { display: grid; gap: 6px; padding: 0 24px; }
+.share-preview { position: relative; display: grid; gap: 14px; width: 100%; padding: 18px; border-radius: 28px; background: #fff; box-shadow: var(--shadow-lg); animation: dialog-in 260ms var(--ease-out); }
+.share-preview img { width: 100%; border-radius: 18px; box-shadow: var(--shadow-sm); }
