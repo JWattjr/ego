@@ -525,11 +525,11 @@ export async function createCampaign(
     !input.title.trim() ||
     !input.creatorName.trim() ||
     !input.drops.length ||
-    input.drops.length > 20
+    input.drops.length > 200
   )
     throw new ApiError(
       "invalid_campaign",
-      "Add a title, creator and 1–20 drops with a future end time.",
+      "Add a title, creator and 1–200 drops with a future end time.",
     );
   if (
     input.drops.some(

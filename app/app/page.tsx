@@ -100,9 +100,9 @@ export default function WalletHome() {
           <span className="action-icon"><Compass size={22} /></span>
           Hunt
         </Link>
-        <Link href="/create" className="action">
+        <Link href="/hide" className="action">
           <span className="action-icon"><Plus size={22} /></span>
-          Drop
+          Hide
         </Link>
       </div>
 
@@ -137,11 +137,19 @@ export default function WalletHome() {
             </span>
             <span className="row-end"><ChevronRight size={18} /></span>
           </Link>
-          <Link href="/create" className="list-row">
+          <Link href="/hide" className="list-row">
             <span className="row-icon"><Plus size={19} /></span>
             <span className="row-main">
-              <strong>Hide drops</strong>
-              <span>Map hunts, giveaway codes, event QR codes and puzzles</span>
+              <strong>Hide money</strong>
+              <span>A Money Drop: scatter USDC across public places for people to find</span>
+            </span>
+            <span className="row-end"><ChevronRight size={18} /></span>
+          </Link>
+          <Link href="/create" className="list-row">
+            <span className="row-icon"><Ticket size={19} /></span>
+            <span className="row-main">
+              <strong>Codes, event QR codes and puzzles</strong>
+              <span>Giveaways people claim with a code, a scan or an answer</span>
             </span>
             <span className="row-end"><ChevronRight size={18} /></span>
           </Link>

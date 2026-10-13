@@ -8,7 +8,7 @@ const tabs = [
   { href: "/", label: "Wallet", icon: Wallet, match: (p: string) => p === "/" || p.startsWith("/wallet") },
   { href: "/map", label: "Explore", icon: Map, match: (p: string) => p.startsWith("/map") },
   { href: "/prizes", label: "Prizes", icon: Gift, match: (p: string) => p.startsWith("/prizes") || p.startsWith("/enter") },
-  { href: "/pay", label: "Create", icon: Plus, match: (p: string) => p.startsWith("/pay") || p.startsWith("/create") },
+  { href: "/pay", label: "Create", icon: Plus, match: (p: string) => p.startsWith("/pay") || p.startsWith("/create") || p.startsWith("/hide") },
 ];
 
 export function Shell({ children }: { children: React.ReactNode }) {

@@ -42,6 +42,7 @@ export type CreateDrop = {
 };
 export type CreateCampaignInput = {
   title: string;
+  startsAt?: number; // Money Drops: hidden from the map until this time
   creatorName: string;
   endsAt: number;
   onePerWallet: boolean;

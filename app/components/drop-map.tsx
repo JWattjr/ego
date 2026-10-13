@@ -1,7 +1,7 @@
 "use client";
 import { useEffect } from "react";
 import L from "leaflet";
-import { Circle, MapContainer, Marker, TileLayer, useMap, useMapEvents } from "react-leaflet";
+import { Circle, CircleMarker, MapContainer, Marker, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import type { DropPublic, Position } from "@/lib/types";
 import { ENUGU, money } from "@/lib/format";
 
@@ -51,6 +51,8 @@ export default function DropMap({
   offsetY = 0,
   onPick,
   picked,
+  areas = [],
+  dots = [],
 }: {
   drops?: DropPublic[];
   onSelect?: (d: DropPublic) => void;
@@ -62,6 +64,8 @@ export default function DropMap({
   offsetY?: number;
   onPick?: (lat: number, lng: number) => void;
   picked?: { lat: number; lng: number };
+  areas?: { lat: number; lng: number; radiusM: number }[]; // Hide money: chosen areas
+  dots?: { lat: number; lng: number }[]; // Hide money: preview of where drops will land
 }) {
   return (
     <MapContainer
@@ -110,6 +114,12 @@ export default function DropMap({
             />
           ))}
       {exact && <Marker position={[exact.lat, exact.lng]} icon={coinIcon("Right here", "big selected")} />}
+      {areas.map((a, i) => (
+        <Circle key={`hide-${i}`} center={[a.lat, a.lng]} radius={a.radiusM} pathOptions={{ color: "#1f6bff", weight: 1.5, dashArray: "4 5", fillColor: "#1f6bff", fillOpacity: 0.1 }} />
+      ))}
+      {dots.map((d, i) => (
+        <CircleMarker key={`dot-${i}`} center={[d.lat, d.lng]} radius={3.5} pathOptions={{ color: "#fff", weight: 1, fillColor: "#1f6bff", fillOpacity: 1 }} />
+      ))}
       {picked && <Marker position={[picked.lat, picked.lng]} icon={coinIcon("Your drop", "big")} />}
       {position && <Marker position={[position.lat, position.lng]} icon={meIcon} title="You" />}
     </MapContainer>
