@@ -1,7 +1,7 @@
 // Pure logic: geography, code hashing, claim checks. No I/O, so it is unit-tested directly.
-import { createHash } from "node:crypto";
+import { createHash, createHmac, timingSafeEqual } from "node:crypto";
 
-export type DropKind = "map" | "code" | "qr" | "puzzle";
+export type DropKind = "map" | "code" | "qr" | "puzzle" | "prize";
 
 export type DropRecord = {
   campaignId: `0x${string}`;
@@ -13,6 +13,7 @@ export type DropRecord = {
   lat?: number;
   lng?: number;
   secretHash?: string; // sha256 of the normalised code or puzzle answer
+  recipientHash?: string; // prize drops: sha256 of the winner's normalised email
   claimed: boolean;
   reported?: boolean;
 };
@@ -49,8 +50,38 @@ export function hashSecret(s: string): string {
 
 export type ClaimProof = { lat?: number; lng?: number; accuracyM?: number; code?: string; answer?: string };
 
+export function normaliseEmail(email: string) {
+  return email.trim().toLowerCase();
+}
+export function emailHash(email: string) {
+  return createHash("sha256").update(normaliseEmail(email)).digest("hex");
+}
+export function isEmail(email: unknown): email is string {
+  return typeof email === "string" && email.length <= 254 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+}
+
+// Stateless email session: "<emailHash>.<expiry>.<hmac>". Proves the holder verified that email.
+export function signSession(hash: string, secret: string, ttlS = 7 * 24 * 3600, now = Date.now()) {
+  const body = `${hash}.${Math.floor(now / 1000) + ttlS}`;
+  return `${body}.${createHmac("sha256", secret).update(body).digest("hex")}`;
+}
+export function verifySession(token: unknown, secret: string, now = Date.now()): string | null {
+  if (typeof token !== "string") return null;
+  const [hash, exp, mac] = token.split(".");
+  if (!hash || !exp || !mac || !/^[0-9a-f]{64}$/.test(hash)) return null;
+  const want = createHmac("sha256", secret).update(`${hash}.${exp}`).digest();
+  const got = Buffer.from(mac, "hex");
+  if (got.length !== want.length || !timingSafeEqual(got, want)) return null;
+  return Number(exp) > now / 1000 ? hash : null;
+}
+
 // Returns null when the proof is good, otherwise an error code from INTERFACE.md.
-export function checkProof(drop: DropRecord, proof: ClaimProof): null | "too_far" | "wrong_code" | "bad_proof" {
+// For prize drops, pass the email hash from a verified session (never from the request body).
+export function checkProof(drop: DropRecord, proof: ClaimProof, verifiedEmailHash?: string | null): null | "too_far" | "wrong_code" | "bad_proof" | "not_your_prize" {
+  if (drop.kind === "prize") {
+    if (!verifiedEmailHash) return "bad_proof";
+    return verifiedEmailHash === drop.recipientHash ? null : "not_your_prize";
+  }
   if (drop.kind === "map") {
     const { lat, lng, accuracyM } = proof;
     if (typeof lat !== "number" || typeof lng !== "number" || typeof accuracyM !== "number") return "bad_proof";

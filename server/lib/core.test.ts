@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { checkProof, distanceM, fuzzedCentre, hashSecret, toPublic, type DropRecord } from "./core.ts";
+import { checkProof, distanceM, emailHash, fuzzedCentre, hashSecret, isEmail, signSession, toPublic, verifySession, type DropRecord } from "./core.ts";
 
 const base = { campaignId: "0x01", dropId: "0xabc", amount: "1000000", title: "t", claimed: false } as const;
 const mapDrop: DropRecord = { ...base, kind: "map", lat: 6.4584, lng: 7.5464 };
@@ -42,4 +42,22 @@ test("public view never leaks secrets or the exact spot from afar", () => {
   assert.equal((far as any).lat, undefined);
   const near = toPublic(mapDrop, "Ada", 0, { lat: 6.4585, lng: 7.5464 });
   assert.deepEqual(near.exact, { lat: 6.4584, lng: 7.5464 });
+});
+
+test("prize drops: only the verified winner's email passes", () => {
+  const prize: DropRecord = { ...base, kind: "prize", recipientHash: emailHash("Winner@Example.com ") };
+  assert.equal(checkProof(prize, {}, emailHash("winner@example.com")), null);
+  assert.equal(checkProof(prize, {}, emailHash("someone@else.com")), "not_your_prize");
+  assert.equal(checkProof(prize, { code: "x" }), "bad_proof"); // no verified session
+});
+
+test("email sessions: valid, tampered, expired, wrong secret", () => {
+  const h = emailHash("a@b.co"), t = signSession(h, "s3cret", 60, 1_000_000);
+  assert.equal(verifySession(t, "s3cret", 1_000_000), h);
+  assert.equal(verifySession(t, "other", 1_000_000), null);
+  assert.equal(verifySession(t.replace(/.$/, (c) => (c === "0" ? "1" : "0")), "s3cret", 1_000_000), null);
+  const forged = `${emailHash("x@y.co")}.${t.split(".")[1]}.${t.split(".")[2]}`;
+  assert.equal(verifySession(forged, "s3cret", 1_000_000), null);
+  assert.equal(verifySession(t, "s3cret", 1_000_000 + 61_000), null);
+  assert.ok(isEmail("a@b.co") && !isEmail("nope") && !isEmail("a @b.co"));
 });
