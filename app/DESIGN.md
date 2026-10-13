@@ -281,3 +281,5 @@ The reduced-motion media query removes CSS animations, transitions and smooth sc
 - **Don't** represent illustrative balances or collectibles as live funds.
 - **Don't** animate the decorative coin when reduced motion is requested.
 
+
+User-supplied visual/motion reference: see [DESIGN-REFERENCE.md](./DESIGN-REFERENCE.md). It records the provided 23-second concept clip separately from the implemented tokens above.

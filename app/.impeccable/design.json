@@ -387,7 +387,13 @@
         "name": "desktop",
         "value": "900px (min-width)"
       }
-    ]
+    ],
+    "reference": {
+      "record": "DESIGN-REFERENCE.md",
+      "sourceFile": "2nFYzoBDASqbgAsh.mp4",
+      "durationSeconds": 23,
+      "role": "user-supplied future visual and motion reference; not an implementation snapshot"
+    }
   },
   "components": [
     {
@@ -435,7 +441,7 @@
       "kind": "chip",
       "refersTo": "demo-chip",
       "description": "Persistent identification of illustrative currency.",
-      "html": "<span class=\"ds-demo\">Demo · fake USDC</span>",
+      "html": "<span class=\"ds-demo\">Demo \u00b7 fake USDC</span>",
       "css": ".ds-demo{display:inline-block;font-family:\"DM Sans\", sans-serif;font-size:11px;font-weight:600;padding:6px 9px;background:var(--blue-light, #edf3ff);color:#245292;border-radius:100px;white-space:nowrap}"
     },
     {
@@ -451,7 +457,7 @@
       "kind": "card",
       "refersTo": "collectible-card",
       "description": "Map variant of the recurring keepsake card.",
-      "html": "<article class=\"ds-card\"><div class=\"ds-art\"><span class=\"ds-art-orbit ds-orbit-one\"></span><span class=\"ds-art-orbit ds-orbit-two\"></span><div class=\"ds-coin\" aria-hidden=\"true\"><span class=\"ds-orbit\"></span><span class=\"ds-dollar\">$</span><span class=\"ds-notch ds-one\"></span><span class=\"ds-notch ds-two\"></span></div><span class=\"ds-dot ds-dot-one\"></span><span class=\"ds-dot ds-dot-two\"></span></div><div class=\"ds-copy\"><span class=\"ds-small\">Enugu edition · map drop</span><h3>Good things nearby</h3><p>From a local creator</p><span class=\"ds-stamp\"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m20 6-11 11-5-5\"/></svg>Collected on Arc</span></div></article>",
+      "html": "<article class=\"ds-card\"><div class=\"ds-art\"><span class=\"ds-art-orbit ds-orbit-one\"></span><span class=\"ds-art-orbit ds-orbit-two\"></span><div class=\"ds-coin\" aria-hidden=\"true\"><span class=\"ds-orbit\"></span><span class=\"ds-dollar\">$</span><span class=\"ds-notch ds-one\"></span><span class=\"ds-notch ds-two\"></span></div><span class=\"ds-dot ds-dot-one\"></span><span class=\"ds-dot ds-dot-two\"></span></div><div class=\"ds-copy\"><span class=\"ds-small\">Enugu edition \u00b7 map drop</span><h3>Good things nearby</h3><p>From a local creator</p><span class=\"ds-stamp\"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m20 6-11 11-5-5\"/></svg>Collected on Arc</span></div></article>",
       "css": ".ds-coin{position:relative;flex-shrink:0;display:flex;align-items:center;justify-content:center;border-radius:50%;background:var(--blue, #1760dd);color:var(--white, #fff);box-shadow:inset -5px -7px 0 rgba(0,38,115,.13);width:80px;height:80px}.ds-orbit{position:absolute;inset:11%;border:2px solid #fff;border-radius:50%;opacity:.75}.ds-dollar{font-family:\"Manrope\", sans-serif;font-size:42px;font-weight:600;line-height:1}.ds-notch{position:absolute;top:42%;width:10%;height:17%;background:var(--blue, #1760dd)}.ds-one{left:7%}.ds-two{right:7%}.ds-card{background:var(--white, #fff);border-radius:16px;overflow:hidden;font-family:\"DM Sans\", sans-serif;color:var(--ink, #142b43)}.ds-art{height:160px;position:relative;background:#e8effd;display:flex;align-items:center;justify-content:center;overflow:hidden}.ds-art .ds-coin{z-index:1;transform:rotate(-12deg)}.ds-art-orbit{position:absolute;border:1px solid #a5bde7;border-radius:50%;height:160px;width:160px}.ds-orbit-one{transform:translate(40px,-44px)}.ds-orbit-two{transform:translate(-50px,48px);width:190px;height:190px}.ds-dot{position:absolute;width:8px;height:8px;background:#86a9e2;border-radius:50%}.ds-dot-one{top:28px;left:30px}.ds-dot-two{bottom:24px;right:24px;width:5px;height:5px}.ds-copy{padding:16px}.ds-small{font-size:11px;font-weight:500;color:var(--muted, #526779)}.ds-copy h3{font-family:\"Manrope\", sans-serif;font-size:15px;font-weight:700;letter-spacing:-.015em;margin:8px 0}.ds-copy p{font-size:12px;line-height:1.6;color:var(--muted, #526779);margin:0 0 12px}.ds-stamp{font-size:10px;display:flex;align-items:center;gap:4px;color:var(--blue, #1760dd)}.ds-stamp svg{width:14px;height:14px}"
     },
     {
@@ -459,7 +465,7 @@
       "kind": "card",
       "refersTo": "safety-card",
       "description": "Sage grouping for safe hunt constraints and a reporting action.",
-      "html": "<section class=\"ds-safety\" aria-label=\"Hunt safely\"><strong>A little adventure. A safe one.</strong><div class=\"ds-rules\"><span>1–5 USDC per drop</span><span>Daytime only</span><span>Public places only</span></div><p>Stay on public paths. Exact locations unlock only within 30 m.</p><button class=\"ds-report\">Report this location</button></section>",
+      "html": "<section class=\"ds-safety\" aria-label=\"Hunt safely\"><strong>A little adventure. A safe one.</strong><div class=\"ds-rules\"><span>1\u20135 USDC per drop</span><span>Daytime only</span><span>Public places only</span></div><p>Stay on public paths. Exact locations unlock only within 30 m.</p><button class=\"ds-report\">Report this location</button></section>",
       "css": ".ds-safety{background:var(--sage, #eaf4ed);padding:18px;border-radius:16px;margin:26px 0;color:var(--green, #275e43);font-family:\"DM Sans\", sans-serif}.ds-safety strong{font-size:13px}.ds-rules{display:flex;flex-wrap:wrap;gap:10px 14px;margin-top:14px}.ds-rules span{font-size:11px;font-weight:500}.ds-safety p{font-size:12px;color:inherit;margin:14px 0 0;line-height:1.6}.ds-report{display:inline-flex;min-height:44px;align-items:center;justify-content:center;gap:7px;padding:6px 0;font-family:\"DM Sans\", sans-serif;font-weight:600;font-size:12px;color:inherit;background:none;border:0;margin-top:4px;cursor:pointer}.ds-report:hover{text-decoration:underline;text-underline-offset:4px}.ds-report:focus-visible{outline:3px solid var(--blue, #1760dd);outline-offset:4px}"
     },
     {
