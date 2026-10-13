@@ -2,7 +2,7 @@
 // Investments as a stacked card deck (like a wallet app): cards overlap, one is open with its
 // balance. Tapping a card opens it; tapping the open card goes to its detail screen.
 import Link from "next/link";
-import { useState } from "react";
+import { useState, ViewTransition } from "react";
 import { ArrowUpRight, Layers, Percent, Vault } from "lucide-react";
 import { Amount } from "./ui";
 import { GROW, type GrowKey } from "@/lib/grow";
@@ -19,7 +19,8 @@ export function Investments() {
         const isOpen = open === g.key;
         const balance = USE_MOCKS ? g.demoBalance : "0";
         return (
-          <article key={g.key} role="listitem" className={`deck-card ${isOpen ? "open" : ""}`} style={{ zIndex: i + 1 }}>
+          <ViewTransition key={g.key} name={`grow-${g.key}`} share="morph" default="none">
+          <article role="listitem" className={`deck-card ${isOpen ? "open" : ""}`} style={{ zIndex: i + 1 }}>
             <button className="deck-head" onClick={() => setOpen(g.key)} aria-expanded={isOpen} aria-controls={`deck-${g.key}`}>
               <span className="deck-icon">
                 <Icon size={15} />
@@ -42,6 +43,7 @@ export function Investments() {
               </div>
             </div>
           </article>
+          </ViewTransition>
         );
       })}
     </div>

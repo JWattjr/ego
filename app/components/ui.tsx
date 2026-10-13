@@ -108,6 +108,7 @@ export function PageTitle({
       {back && (
         <Link
           href={back}
+          transitionTypes={["nav-back"]}
           className="icon-button back-button"
           aria-label="Go back"
         >

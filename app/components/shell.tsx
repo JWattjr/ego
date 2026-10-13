@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState, ViewTransition } from "react";
 import { ArrowUpDown, Coins, Compass, PiggyBank, Plus } from "lucide-react";
 import { USE_MOCKS } from "@/lib/api";
 import { CreateSheet } from "./create-sheet";
@@ -26,7 +26,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
       <div className="phone">
         <div className={`phone-scroll ${bleed ? "bleed" : ""}`}>
           {!bleed && (
-            <header className="topbar">
+            <header className="topbar" style={{ viewTransitionName: "ego-topbar" }}>
               <Link href="/" className="brand" aria-label="Ego home">
                 ego<span className="brand-dot" />
               </Link>
@@ -34,10 +34,20 @@ export function Shell({ children }: { children: React.ReactNode }) {
               <span className={`pill ${USE_MOCKS ? "demo" : "live"}`}>{USE_MOCKS ? "Demo" : "Arc mainnet"}</span>
             </header>
           )}
-          <main>{children}</main>
+          <main>
+            {/* Route transitions: tabs cross-fade, back slides right, everything else rises in. */}
+            <ViewTransition
+              key={path}
+              enter={{ "nav-tab": "nav-tab", "nav-back": "nav-back", default: "nav-rise" }}
+              exit={{ "nav-tab": "nav-tab", "nav-back": "nav-back", default: "nav-rise" }}
+              default="none"
+            >
+              <div>{children}</div>
+            </ViewTransition>
+          </main>
         </div>
         {showTabs && (
-          <nav className="tabbar" aria-label="Main navigation">
+          <nav className="tabbar" aria-label="Main navigation" style={{ viewTransitionName: "ego-tabbar" }}>
             {tabs.map((t) => {
               if (!t)
                 return (
@@ -48,7 +58,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
               const active = t.match(path);
               const Icon = t.icon;
               return (
-                <Link key={t.href} href={t.href} className={active ? "active" : ""} aria-current={active ? "page" : undefined}>
+                <Link key={t.href} href={t.href} transitionTypes={["nav-tab"]} className={active ? "active" : ""} aria-current={active ? "page" : undefined}>
                   <Icon size={22} strokeWidth={2.1} />
                   <span>{t.label}</span>
                 </Link>

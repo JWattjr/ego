@@ -1,5 +1,5 @@
 "use client";
-import { use } from "react";
+import { use, ViewTransition } from "react";
 import { notFound } from "next/navigation";
 import { ArrowDownToLine, ArrowUpFromLine, Info, ShieldAlert } from "lucide-react";
 import { Amount, PageTitle } from "@/components/ui";
@@ -12,6 +12,7 @@ export default function GrowPage({ params }: { params: Promise<{ key: string }> 
   return (
     <div className="page">
       <PageTitle back="/" title={g.title} description={g.short} />
+      <ViewTransition name={`grow-${g.key}`} share="morph" default="none">
       <section className="card grow-hero">
         <span className="small-label">Your position</span>
         <Amount base={USE_MOCKS ? g.demoBalance : "0"} />
@@ -25,6 +26,7 @@ export default function GrowPage({ params }: { params: Promise<{ key: string }> 
         </div>
         {!USE_MOCKS && <p className="help-text">Coming soon on Arc. Deposits open once this integration is live.</p>}
       </section>
+      </ViewTransition>
       <section className="card grow-info">
         <h2><Info size={17} /> How it works</h2>
         <p>{g.how}</p>
