@@ -871,8 +871,10 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: color-m
 .swap-leg > div { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .swap-leg input, .swap-leg output { font-family: var(--display); font-size: 34px; font-weight: 800; border: 0; box-shadow: none; padding: 0; background: transparent; min-width: 0; width: 100%; }
 .token { flex: none; display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px 6px 6px; border-radius: 999px; background: var(--surface-2); font-weight: 700; font-size: 14px; }
-.token::before { content: ""; width: 24px; height: 24px; border-radius: 50%; background: url("/coin/front.png") center / contain no-repeat; }
-.token-EURC::before { filter: hue-rotate(-45deg) saturate(0.95); }
+/* Official token logos from Circle's Brand Kit (circle.com/pressroom), used as provided. */
+.token::before { content: ""; width: 24px; height: 24px; background: center / contain no-repeat; }
+.token-USDC::before { background-image: url("/tokens/usdc.svg"); }
+.token-EURC::before { background-image: url("/tokens/eurc.svg"); }
 .swap-flip { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 40px; height: 40px; border-radius: 12px; border: 4px solid var(--bg-2); background: var(--surface); box-shadow: var(--shadow-sm); display: grid; place-items: center; color: var(--blue); z-index: 2; transition: transform 160ms var(--ease-out); }
 .swap-flip:active { transform: translate(-50%, -50%) rotate(180deg) scale(0.95); }
 .swap-facts { margin: 0; }
