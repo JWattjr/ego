@@ -37,9 +37,10 @@ export default function CoinStills() {
     if (process.env.NODE_ENV !== "development") return;
     (async () => {
       await document.fonts.load("700 470px Manrope"); // the $ is drawn with the brand font
-      const { renderCoinStill } = await import("@/components/coin3d");
+      const { renderCoinStill, loadUsdcArt } = await import("@/components/coin3d");
+      const art = await loadUsdcArt(1024);
       for (const [name, pose] of Object.entries(POSES)) {
-        const data = await cropToCoin(renderCoinStill(pose, 768));
+        const data = await cropToCoin(renderCoinStill(pose, 768, art));
         const r = await fetch("/api/dev/coin", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ name, data }) });
         setLog((l) => [...l, `${name}: ${r.status}`]);
       }

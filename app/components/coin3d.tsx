@@ -1,14 +1,14 @@
 "use client";
-// A real 3D USDC-style coin, built in code (no model file): lathe-turned body with a raised,
-// bevelled rim and recessed faces, an embossed $ + arcs mark, and a ridged edge.
-import { useEffect, useMemo, useRef } from "react";
+// A real 3D USDC coin, built in code (no model file): lathe-turned body with a raised, bevelled rim
+// and recessed faces, Circle's official USDC token artwork embossed on each face, and a ridged edge.
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 
 export type CoinEntrance = "none" | "drop";
 
-const BLUE = "#2a60d2";
+const BLUE = "#0B53BF"; // Circle's official USDC blue
 const R = 1, H = 0.085, FACE_R = 0.8, FACE_Y = 0.045;
 
 // Coin profile from back face to front face (x = radius, y = height), turned around the Y axis.
@@ -17,9 +17,53 @@ const PROFILE = [
   [R, 0.05], [0.99, 0.072], [0.95, H], [0.85, H], [0.82, 0.072], [FACE_R, FACE_Y],
 ].map(([x, y]) => new THREE.Vector2(x, y));
 
-// The face artwork, drawn once: colour map (blue face, white mark) and bump map (mark raised, soft edges).
-function faceTextures() {
+// Circle's official USDC token logo (public/tokens/usdc.svg, from Circle's Brand Kit), loaded as a
+// vector at full texture size so the face stays sharp.
+let artPromise: Promise<HTMLImageElement> | null = null;
+export function loadUsdcArt(size = 1024): Promise<HTMLImageElement> {
+  return (artPromise ??= fetch("/tokens/usdc.svg")
+    .then((r) => r.text())
+    .then((svg) => {
+      const sized = svg.replace(/width="96"/, `width="${size}"`).replace(/height="96"/, `height="${size}"`);
+      const img = new Image();
+      img.src = URL.createObjectURL(new Blob([sized], { type: "image/svg+xml" }));
+      return img.decode().then(() => img);
+    }));
+}
+
+// Face textures. With the official artwork: its colours as-is, and its white mark raised as the emboss.
+// Without it (still loading, or offline): a drawn fallback.
+function faceTextures(art?: HTMLImageElement) {
   const size = 1024, c = size / 2;
+  if (art) {
+    const colour = document.createElement("canvas");
+    colour.width = colour.height = size;
+    const a = colour.getContext("2d")!;
+    a.fillStyle = BLUE;
+    a.fillRect(0, 0, size, size);
+    a.drawImage(art, 0, 0, size, size);
+    // Emboss: white parts of the logo become raised, with a soft bevel.
+    const mask = document.createElement("canvas");
+    mask.width = mask.height = size;
+    const m = mask.getContext("2d")!;
+    m.drawImage(art, 0, 0, size, size);
+    const px = m.getImageData(0, 0, size, size);
+    for (let i = 0; i < px.data.length; i += 4) {
+      const v = px.data[i] + px.data[i + 1] + px.data[i + 2] > 600 ? 255 : 0;
+      px.data[i] = px.data[i + 1] = px.data[i + 2] = v;
+      px.data[i + 3] = 255;
+    }
+    m.putImageData(px, 0, 0);
+    const bump = document.createElement("canvas");
+    bump.width = bump.height = size;
+    const b = bump.getContext("2d")!;
+    b.filter = "blur(6px)";
+    b.drawImage(mask, 0, 0);
+    const map = new THREE.CanvasTexture(colour);
+    map.colorSpace = THREE.SRGBColorSpace;
+    map.anisotropy = 8;
+    return { map, bump: new THREE.CanvasTexture(bump) };
+  }
   const draw = (ctx: CanvasRenderingContext2D, ink: string) => {
     ctx.strokeStyle = ink;
     ctx.fillStyle = ink;
@@ -92,12 +136,12 @@ function Studio() {
 }
 
 // The coin itself as a plain three.js object, so the live canvas and still renders share it.
-export function createCoin() {
-  const { map, bump } = faceTextures();
+export function createCoin(art?: HTMLImageElement) {
+  const { map, bump } = faceTextures(art);
   const ridges = ridgeTexture();
   const metal = { roughness: 0.34, metalness: 0.12, clearcoat: 1, clearcoatRoughness: 0.18, envMapIntensity: 1.1 };
   const body = new THREE.MeshPhysicalMaterial({ color: BLUE, ...metal });
-  const edge = new THREE.MeshPhysicalMaterial({ color: "#2558c6", bumpMap: ridges, bumpScale: 1.5, ...metal });
+  const edge = new THREE.MeshPhysicalMaterial({ color: "#0A4AAB", bumpMap: ridges, bumpScale: 1.5, ...metal });
   const faceMat = new THREE.MeshPhysicalMaterial({ map, bumpMap: bump, bumpScale: 4, ...metal });
   const face = new THREE.CircleGeometry(FACE_R + 0.002, 96);
   const coin = new THREE.Group();
@@ -123,7 +167,7 @@ function addLights(scene: THREE.Scene) {
 }
 
 // One synchronous render of the coin at a fixed pose to a PNG data URL (no animation loop needed).
-export function renderCoinStill(pose: [number, number], px = 512) {
+export function renderCoinStill(pose: [number, number], px = 512, art?: HTMLImageElement) {
   const canvas = document.createElement("canvas");
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, preserveDrawingBuffer: true });
   renderer.setPixelRatio(1);
@@ -134,7 +178,7 @@ export function renderCoinStill(pose: [number, number], px = 512) {
   scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
   addLights(scene);
   const holder = new THREE.Group();
-  holder.add(createCoin());
+  holder.add(createCoin(art));
   holder.rotation.set(pose[0], pose[1], 0);
   scene.add(holder);
   const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 100);
@@ -146,12 +190,20 @@ export function renderCoinStill(pose: [number, number], px = 512) {
   return url;
 }
 
-function CoinMesh({ entrance, motion }: { entrance: CoinEntrance; motion: boolean }) {
+function CoinMesh({ entrance, motion, leaving }: { entrance: CoinEntrance; motion: boolean; leaving: boolean }) {
+  const leave = useRef({ on: false, vy: 0 });
+  useEffect(() => {
+    if (leaving && !leave.current.on) leave.current = { on: true, vy: 0.5 }; // claimed: rise and spin away
+  }, [leaving]);
   const spin = useRef<THREE.Group>(null);
   const drag = useRef({ active: false, lastX: 0, velocity: 0 });
   const enter = useRef({ y: entrance === "drop" ? 3 : 0, vy: 0, boost: entrance === "drop" ? 14 : 0 });
 
-  const coin = useMemo(createCoin, []);
+  const [art, setArt] = useState<HTMLImageElement | null>(null);
+  useEffect(() => {
+    loadUsdcArt().then(setArt).catch(() => setArt(null));
+  }, []);
+  const coin = useMemo(() => (art ? createCoin(art) : null), [art]);
 
   useFrame((state, dt) => {
     const g = spin.current;
@@ -164,6 +216,17 @@ function CoinMesh({ entrance, motion }: { entrance: CoinEntrance; motion: boolea
       const idle = motion ? 0.9 : 0;
       d.velocity += (idle + e.boost - d.velocity) * Math.min(1, dt * 2.2);
       e.boost *= Math.pow(0.12, dt);
+    }
+    if (leave.current.on) {
+      // Fly up and out of frame, spinning faster: the money is on its way to the wallet.
+      const l = leave.current;
+      l.vy += 14 * dt;
+      e.y += l.vy * dt;
+      d.velocity += 30 * dt;
+      g.rotation.y += d.velocity * dt;
+      g.position.y = e.y;
+      g.scale.setScalar(Math.max(0.6, 1 - e.y * 0.08));
+      return;
     }
     g.rotation.y += d.velocity * dt;
     // Spring the entrance drop, then a gentle bob.
@@ -192,7 +255,7 @@ function CoinMesh({ entrance, motion }: { entrance: CoinEntrance; motion: boolea
       onPointerUp={() => (drag.current.active = false)}
       onPointerCancel={() => (drag.current.active = false)}
     >
-      <primitive object={coin} />
+      {coin && <primitive object={coin} />}
     </group>
   );
 }
@@ -201,10 +264,12 @@ export default function Coin3D({
   size = 220,
   entrance = "none",
   className = "",
+  leaving = false,
 }: {
   size?: number;
   entrance?: CoinEntrance;
   className?: string;
+  leaving?: boolean; // true once a claim starts: the coin flies up and away
 }) {
   const motion = useMemo(() => typeof window === "undefined" || !window.matchMedia("(prefers-reduced-motion: reduce)").matches, []);
   return (
@@ -216,7 +281,7 @@ export default function Coin3D({
         style={{ touchAction: "pan-y" }}
       >
         <Studio />
-        <CoinMesh entrance={motion ? entrance : "none"} motion={motion} />
+        <CoinMesh entrance={motion ? entrance : "none"} motion={motion} leaving={leaving && motion} />
       </Canvas>
     </div>
   );

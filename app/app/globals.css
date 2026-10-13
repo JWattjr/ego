@@ -1043,3 +1043,36 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: color-m
   mask: radial-gradient(closest-side, #000 60%, transparent);
   transition: transform 300ms var(--ease-out);
 }
+
+/* Claim scene: soft contact shadow under the floating coin; it fades as the coin flies away */
+.ground-ring { position: relative; }
+.ground-ring::before {
+  content: "";
+  position: absolute;
+  left: 22%;
+  right: 22%;
+  top: 30%;
+  bottom: 18%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(6, 30, 20, 0.45), transparent);
+  filter: blur(4px);
+  animation: shadow-bob 4s ease-in-out infinite;
+  transition: opacity 400ms ease;
+}
+@keyframes shadow-bob { 50% { transform: scaleX(0.86); opacity: 0.75; } }
+.ground-ring.released::before { opacity: 0; }
+.ground-ring.released { opacity: 0.4; transition: opacity 500ms ease; }
+.scene .coin3d { overflow: visible; }
+
+/* Hunt: the radar around the target pulses faster as you get closer */
+.dial-orbit .coin-marker::before { animation-duration: var(--pulse, 1.8s); }
+.dial-orbit .coin-marker::after {
+  content: "";
+  position: absolute;
+  inset: -14px;
+  border-radius: 50%;
+  border: 2px solid rgba(31, 107, 255, 0.3);
+  animation: ping var(--pulse, 1.8s) var(--ease-out) infinite;
+  animation-delay: calc(var(--pulse, 1.8s) / 2);
+}
+.dial-orbit.hot .coin-marker::before, .dial-orbit.hot .coin-marker::after { border-color: rgba(31, 107, 255, 0.6); border-width: 2.5px; }

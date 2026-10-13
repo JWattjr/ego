@@ -17,7 +17,7 @@ function hasWebGL() {
   }
 }
 
-export function Coin3D({ size = 220, entrance = "none" }: { size?: number; entrance?: CoinEntrance }) {
+export function Coin3D({ size = 220, entrance = "none", leaving = false }: { size?: number; entrance?: CoinEntrance; leaving?: boolean }) {
   const [gl, setGl] = useState<boolean | null>(null);
   useEffect(() => setGl(hasWebGL()), []);
   if (!gl)
@@ -26,5 +26,5 @@ export function Coin3D({ size = 220, entrance = "none" }: { size?: number; entra
         <Coin size="xl" spin float style={{ "--s": `${Math.round(size * 0.62)}px` } as React.CSSProperties} />
       </div>
     );
-  return <Coin3DCanvas size={size} entrance={entrance} />;
+  return <Coin3DCanvas size={size} entrance={entrance} leaving={leaving} />;
 }

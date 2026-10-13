@@ -55,8 +55,8 @@ function ClaimScene({
         <span style={{ width: 42 }} />
       </div>
       <div className="scene-center">
-        <Coin3D size={260} entrance="drop" />
-        <div className="ground-ring" />
+        <Coin3D size={260} entrance="drop" leaving={claim.busy} />
+        <div className={`ground-ring ${claim.busy ? "released" : ""}`} />
       </div>
       <div className="scene-bottom">
         <h2>{money(drop.amount)} USDC drop</h2>
@@ -155,6 +155,18 @@ function Hunt({ dropId }: { dropId: string }) {
   const absBearing = position && target ? bearing(position, target) : null;
   const angle = absBearing === null ? 0 : heading !== null ? absBearing - heading : absBearing;
   const showScene = !!drop && near && accurate && !drop.claimed && !sceneClosed;
+  // Closer = faster, stronger radar pulse (2.4 s far away, 0.55 s at the spot).
+  const pulse = drop?.distanceM === undefined ? 2.4 : Math.max(0.55, Math.min(2.4, drop.distanceM / 120));
+
+  // Phones that support it (Android) buzz briefly on "warmer", and twice on arrival.
+  const buzzed = useRef(false);
+  useEffect(() => {
+    if (typeof navigator === "undefined" || !("vibrate" in navigator)) return;
+    if (near && !buzzed.current) {
+      buzzed.current = true;
+      navigator.vibrate([60, 50, 60]);
+    } else if (trend === "warmer") navigator.vibrate(25);
+  }, [trend, near, drop?.distanceM]);
 
   const trendText = near
     ? "You're right there"
@@ -192,7 +204,7 @@ function Hunt({ dropId }: { dropId: string }) {
               <span className="dial-ticks major" />
               <span className="dial-north" />
               {absBearing !== null && (
-                <div className="dial-orbit" style={{ transform: `rotate(${angle}deg)` }}>
+                <div className={`dial-orbit ${pulse < 1 ? "hot" : ""}`} style={{ transform: `rotate(${angle}deg)`, "--pulse": `${pulse}s` } as React.CSSProperties}>
                   <span className="coin-marker" style={{ transform: `translate(-50%, 0) rotate(${-angle}deg)` }}>
                     <Coin size="sm" />
                   </span>
