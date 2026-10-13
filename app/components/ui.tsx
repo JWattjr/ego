@@ -74,17 +74,20 @@ export function Amount({
   currency = "USDC",
   className = "",
   hidden = false,
+  prefix = "",
 }: {
   base: string;
   currency?: string;
   className?: string;
   hidden?: boolean;
+  prefix?: string;
 }) {
   const n = BigInt(base),
     whole = (n / 1000000n).toLocaleString("en-US"),
     dec = ((n % 1000000n) / 10000n).toString().padStart(2, "0");
   return (
     <span className={`amount ${className}`}>
+      {prefix}
       {hidden ? "••••" : whole}
       {!hidden && <span className="dec">.{dec}</span>}
       {currency && <span className="cur">{currency}</span>}

@@ -876,3 +876,40 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: color-m
 .swap-flip { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 40px; height: 40px; border-radius: 12px; border: 4px solid var(--bg-2); background: var(--surface); box-shadow: var(--shadow-sm); display: grid; place-items: center; color: var(--blue); z-index: 2; transition: transform 160ms var(--ease-out); }
 .swap-flip:active { transform: translate(-50%, -50%) rotate(180deg) scale(0.95); }
 .swap-facts { margin: 0; }
+
+/* Investments: stacked card deck */
+.deck { display: grid; padding-top: 4px; }
+.deck-card {
+  position: relative;
+  border-radius: 22px;
+  background: var(--surface);
+  box-shadow: 0 -4px 14px rgba(15, 30, 60, 0.06), 0 1px 0 var(--line), var(--shadow-sm);
+  transition: transform 220ms var(--ease-out);
+}
+.deck-card + .deck-card { margin-top: -14px; } /* overlap like cards in a wallet */
+.deck-card:active { transform: scale(0.985); }
+.deck-head { display: flex; align-items: center; gap: 12px; width: 100%; padding: 16px 18px 26px; border: 0; background: none; text-align: left; }
+.deck-card:last-child .deck-head, .deck-card.open .deck-head { padding-bottom: 14px; }
+.deck-icon { position: relative; width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; background: var(--surface-2); color: var(--ink-2); flex: none; }
+.deck-dot { position: absolute; top: -3px; right: -3px; width: 9px; height: 9px; border-radius: 50%; background: #ff8a1f; box-shadow: 0 0 0 2px var(--surface); }
+.deck-title { flex: 1; font-weight: 600; font-size: 15.5px; }
+.deck-amount { font-weight: 700; font-variant-numeric: tabular-nums; }
+.deck-body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 320ms var(--ease-drawer); }
+.deck-body > div { overflow: hidden; display: grid; gap: 8px; padding: 0 18px; }
+.deck-card.open .deck-body { grid-template-rows: 1fr; }
+.deck-card.open .deck-body > div { padding-bottom: 18px; }
+.deck-body .amount { font-size: 40px; }
+.deck-meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 12.5px; color: var(--ink-3); }
+.deck-rate { padding: 3px 9px; border-radius: 999px; background: var(--green-soft); color: var(--green); font-weight: 600; }
+.deck-open { display: inline-flex; align-items: center; gap: 4px; font-size: 13.5px; font-weight: 600; color: var(--blue); }
+
+/* Drop banner: radar ring around the coin, like the concept */
+.drop-banner .coin { overflow: visible; }
+.drop-banner .coin::after {
+  content: "";
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(31, 107, 255, 0.45);
+  animation: ping 2.2s var(--ease-out) infinite;
+}

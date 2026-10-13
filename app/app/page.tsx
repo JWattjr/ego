@@ -4,9 +4,6 @@ import { useEffect, useState } from "react";
 import {
   ArrowDownLeft,
   ArrowLeftRight,
-  Layers,
-  Percent,
-  Vault,
   ArrowUpRight,
   ChevronRight,
   Compass,
@@ -22,6 +19,7 @@ import {
 import { connectWallet, getNearby, getWallet, USE_MOCKS } from "@/lib/api";
 import { MyCampaigns } from "@/components/my-campaigns";
 import { GROW } from "@/lib/grow";
+import { Investments } from "@/components/investments";
 import type { DropPublic, WalletView } from "@/lib/types";
 import { money, shortAddress } from "@/lib/format";
 import { Amount, Coin, CollectibleCard, ErrorMessage, Loading, Safety } from "@/components/ui";
@@ -87,7 +85,7 @@ export default function WalletHome() {
               {hidden ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
           </span>
-          {wallet ? <Amount base={wallet.balance} hidden={hidden} /> : <span className="amount">—</span>}
+          {wallet ? <Amount base={wallet.balance} hidden={hidden} currency="" prefix="$" /> : <span className="amount">—</span>}
           {wallet?.address ? (
             <span className="balance-address">{shortAddress(wallet.address)} · Arc</span>
           ) : (
@@ -128,21 +126,7 @@ export default function WalletHome() {
             {USE_MOCKS ? `$${(GROW.reduce((s, g) => s + Number(g.demoBalance), 0) / 1e6).toFixed(2)}` : "$0.00"} <ChevronRight size={15} />
           </span>
         </Link>
-        <div className="list-card">
-          {GROW.map((g) => {
-            const Icon = g.key === "lending" ? Percent : g.key === "pools" ? Layers : Vault;
-            return (
-              <Link key={g.key} href={`/grow/${g.key}`} className="list-row">
-                <span className="row-icon"><Icon size={18} /></span>
-                <span className="row-main">
-                  <strong>{g.title}</strong>
-                  <span>{g.short}</span>
-                </span>
-                <span className="row-end">{USE_MOCKS ? `$${(Number(g.demoBalance) / 1e6).toFixed(2)}` : <small>Soon</small>}</span>
-              </Link>
-            );
-          })}
-        </div>
+        <Investments />
       </section>
 
       <section className="section rise rise-3">
