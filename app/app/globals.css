@@ -170,7 +170,7 @@ p { margin: 0; }
   width: var(--s);
   height: var(--s);
   flex: none;
-  background: url("/coin/front.png") 52% 50% / 128% no-repeat;
+  background: url("/coin/front.png") center / contain no-repeat; /* images are pre-cropped with padding */
   filter: drop-shadow(0 calc(var(--s) * 0.06) calc(var(--s) * 0.08) rgba(16, 60, 170, 0.28));
   transform-style: preserve-3d;
 }
