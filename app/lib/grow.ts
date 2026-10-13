@@ -8,6 +8,7 @@ export type GrowProduct = {
   venue: string;
   demoBalance: string; // USDC base units, demo mode only
   demoRate: string;
+  demoEarned: string; // USDC base units earned so far, demo mode only
   how: string;
   risk: string;
 };
@@ -20,6 +21,7 @@ export const GROW: GrowProduct[] = [
     venue: "Aave on Arc",
     demoBalance: "360000",
     demoRate: "3.1% APY",
+    demoEarned: "8000",
     how: "Your USDC goes into a lending market. Borrowers pay interest, and you can withdraw any time the market has cash available.",
     risk: "Rates change with demand. Smart-contract and borrower-default risk apply. Not a bank account.",
   },
@@ -30,6 +32,7 @@ export const GROW: GrowProduct[] = [
     venue: "Uniswap on Arc",
     demoBalance: "4820000",
     demoRate: "Fees vary",
+    demoEarned: "310000",
     how: "You add USDC and EURC to a pool. Every swap through it pays you a small share of the fee.",
     risk: "If the USDC/EURC rate moves, you can end up with less than you put in (impermanent loss). For experienced users.",
   },
@@ -40,6 +43,7 @@ export const GROW: GrowProduct[] = [
     venue: "Morpho via Circle Earn Kit",
     demoBalance: "6320000",
     demoRate: "4.8% APY",
+    demoEarned: "214000",
     how: "A vault spreads your USDC across vetted lending markets and rebalances for you. Deposit and withdraw in one tap.",
     risk: "Earnings vary. Your USDC is lent to over-collateralised borrowers through Morpho. Smart-contract risk applies.",
   },

@@ -31,6 +31,7 @@ export function Investments() {
             <div className="deck-body" id={`deck-${g.key}`} inert={!isOpen}>
               <div>
                 <Amount base={balance} currency="" prefix="$" />
+                {USE_MOCKS && <span className="deck-earned">+${(Number(g.demoEarned) / 1e6).toFixed(2)} earned</span>}
                 <div className="deck-meta">
                   <span className="deck-rate">{USE_MOCKS ? g.demoRate : "Coming soon on Arc"}</span>
                   <span>{g.venue}</span>

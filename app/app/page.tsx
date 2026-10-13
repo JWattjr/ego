@@ -6,31 +6,18 @@ import {
   ArrowLeftRight,
   ArrowUpRight,
   ChevronRight,
-  Compass,
   Gift,
-  Trophy,
   Eye,
   EyeOff,
   Plus,
-  Puzzle,
-  QrCode,
-  Ticket,
 } from "lucide-react";
 import { connectWallet, getNearby, getWallet, USE_MOCKS } from "@/lib/api";
-import { MyCampaigns } from "@/components/my-campaigns";
 import { GROW } from "@/lib/grow";
 import { Investments } from "@/components/investments";
 import type { DropPublic, WalletView } from "@/lib/types";
 import { money, shortAddress } from "@/lib/format";
 import { Amount, Coin, CollectibleCard, ErrorMessage, Loading, Safety } from "@/components/ui";
 import { Coin3D } from "@/components/coin3d-loader";
-
-const ways = [
-  { href: "/prizes", icon: Gift, title: "Prizes waiting for you", sub: "Won a hackathon or bounty? Claim it with your email" },
-  { href: "/enter/code", icon: Ticket, title: "Enter a code", sub: "From a giveaway, a post or a flyer" },
-  { href: "/enter/qr", icon: QrCode, title: "Scan an event QR", sub: "Early birds catch the most" },
-  { href: "/enter/puzzle", icon: Puzzle, title: "Solve a puzzle", sub: "Crack the riddle, keep the coin" },
-];
 
 export default function WalletHome() {
   const [wallet, setWallet] = useState<WalletView | null>(null),
@@ -119,8 +106,17 @@ export default function WalletHome() {
         </Link>
       </div>
 
+      <Link href="/prizes" className="prize-teaser rise rise-2">
+        <span className="row-icon"><Gift size={19} /></span>
+        <span className="row-main">
+          <strong>Prizes waiting for you</strong>
+          <span>Won a hackathon or a bounty? Claim it with your email</span>
+        </span>
+        <ChevronRight size={18} />
+      </Link>
+
       <section className="section rise rise-3">
-        <Link href="/grow/vaults" className="section-title section-link">
+        <Link href="/earn" className="section-title section-link">
           <h2>Investments</h2>
           <span>
             {USE_MOCKS ? `$${(GROW.reduce((s, g) => s + Number(g.demoBalance), 0) / 1e6).toFixed(2)}` : "$0.00"} <ChevronRight size={15} />
@@ -129,83 +125,52 @@ export default function WalletHome() {
         <Investments />
       </section>
 
-      <section className="section rise rise-3">
-        <div className="section-title">
-          <h2>Ways to find money</h2>
-        </div>
-        <div className="list-card">
-          {ways.map(({ href, icon: Icon, title, sub }) => (
-            <Link key={href} href={href} className="list-row">
-              <span className="row-icon"><Icon size={19} /></span>
-              <span className="row-main">
-                <strong>{title}</strong>
-                <span>{sub}</span>
-              </span>
-              <span className="row-end"><ChevronRight size={18} /></span>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      <section className="section rise rise-3">
-        <div className="section-title">
-          <h2>For organisers</h2>
-        </div>
-        <div className="list-card">
-          <Link href="/pay" className="list-row">
-            <span className="row-icon"><Trophy size={19} /></span>
-            <span className="row-main">
-              <strong>Pay winners</strong>
-              <span>Lock hackathon prizes and bounties on Arc; winners claim by email</span>
-            </span>
-            <span className="row-end"><ChevronRight size={18} /></span>
-          </Link>
-          <Link href="/hide" className="list-row">
-            <span className="row-icon"><Plus size={19} /></span>
-            <span className="row-main">
-              <strong>Hide money</strong>
-              <span>A Money Drop: scatter USDC across public places for people to find</span>
-            </span>
-            <span className="row-end"><ChevronRight size={18} /></span>
-          </Link>
-          <Link href="/create" className="list-row">
-            <span className="row-icon"><Ticket size={19} /></span>
-            <span className="row-main">
-              <strong>Codes, event QR codes and puzzles</strong>
-              <span>Giveaways people claim with a code, a scan or an answer</span>
-            </span>
-            <span className="row-end"><ChevronRight size={18} /></span>
-          </Link>
-        </div>
-      </section>
-
-      <MyCampaigns />
-
       <section className="section rise rise-4">
         <div className="section-title">
-          <h2>Your collection</h2>
-          <span>{wallet?.collectibles.length ?? 0} found</span>
+          <h2>Coins</h2>
+          <span>{wallet ? `$${(Number(wallet.balance) / 1e6 + (USE_MOCKS ? 5 : 0)).toFixed(2)}` : ""}</span>
         </div>
-        {!wallet && !error ? (
-          <Loading />
-        ) : wallet?.collectibles.length ? (
+        <div className="list-card">
+          <div className="list-row coin-row">
+            <img src="/tokens/usdc.svg" alt="" width={36} height={36} />
+            <span className="row-main">
+              <strong>USDC</strong>
+              <span>US dollar · Circle</span>
+            </span>
+            <span className="row-end coin-value">
+              {wallet ? `$${(Number(wallet.balance) / 1e6).toFixed(2)}` : "—"}
+              <small>{wallet ? `${(Number(wallet.balance) / 1e6).toFixed(2)} USDC` : ""}</small>
+            </span>
+          </div>
+          <div className="list-row coin-row">
+            <img src="/tokens/eurc.svg" alt="" width={36} height={36} />
+            <span className="row-main">
+              <strong>EURC</strong>
+              <span>Euro · Circle</span>
+            </span>
+            <span className="row-end coin-value">
+              {USE_MOCKS ? "$5.00" : "$0.00"}
+              <small>{USE_MOCKS ? "4.30 EURC" : "0 EURC"}</small>
+            </span>
+          </div>
+        </div>
+      </section>
+
+      {wallet?.collectibles.length ? (
+        <section className="section">
+          <div className="section-title">
+            <h2>Your collection</h2>
+            <span>{wallet.collectibles.length} found</span>
+          </div>
           <div className="collectibles-scroll">
             {wallet.collectibles.map((item) => (
               <CollectibleCard key={item.id} item={item} />
             ))}
           </div>
-        ) : (
-          <div className="empty-collection">
-            <Coin size="md" float />
-            <h3>Your first find is waiting</h3>
-            <p>Every drop you claim comes with a collectible card, minted on Arc.</p>
-            <Link href="/map" className="text-button">
-              Take a look around <ChevronRight size={16} />
-            </Link>
-          </div>
-        )}
-      </section>
+        </section>
+      ) : null}
 
+      {!wallet && !error && <Loading />}
       <Safety compact />
       {USE_MOCKS && <p className="demo-note">Prototype data. No real funds move in demo mode.</p>}
     </div>

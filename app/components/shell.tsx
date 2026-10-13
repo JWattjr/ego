@@ -1,21 +1,26 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Gift, Map, Plus, Wallet } from "lucide-react";
+import { useState } from "react";
+import { ArrowUpDown, Coins, Compass, PiggyBank, Plus } from "lucide-react";
 import { USE_MOCKS } from "@/lib/api";
+import { CreateSheet } from "./create-sheet";
 
 const tabs = [
-  { href: "/", label: "Wallet", icon: Wallet, match: (p: string) => p === "/" || p.startsWith("/wallet") },
-  { href: "/map", label: "Explore", icon: Map, match: (p: string) => p.startsWith("/map") },
-  { href: "/prizes", label: "Prizes", icon: Gift, match: (p: string) => p.startsWith("/prizes") || p.startsWith("/enter") },
-  { href: "/pay", label: "Create", icon: Plus, match: (p: string) => p.startsWith("/pay") || p.startsWith("/create") || p.startsWith("/hide") },
+  { href: "/", label: "Home", icon: Coins, match: (p: string) => p === "/" || p.startsWith("/wallet") || p.startsWith("/swap") },
+  { href: "/earn", label: "Earn", icon: PiggyBank, match: (p: string) => p.startsWith("/earn") || p.startsWith("/grow") },
+  null, // centre: Create
+  { href: "/apps", label: "Apps", icon: Compass, match: (p: string) => ["/apps", "/map", "/prizes", "/enter"].some((x) => p.startsWith(x)) },
+  { href: "/activity", label: "Activity", icon: ArrowUpDown, match: (p: string) => p.startsWith("/activity") },
 ];
 
 export function Shell({ children }: { children: React.ReactNode }) {
   const path = usePathname();
+  const [creating, setCreating] = useState(false);
   // Map, hunt and found screens draw their own full-bleed chrome.
   const bleed = path.startsWith("/map") || path.startsWith("/hunt") || path.startsWith("/found");
   const showTabs = !path.startsWith("/hunt") && !path.startsWith("/found");
+  const creatingNow = ["/hide", "/pay", "/create"].some((x) => path.startsWith(x));
   return (
     <div className="app-stage">
       <div className="phone">
@@ -26,26 +31,32 @@ export function Shell({ children }: { children: React.ReactNode }) {
                 ego<span className="brand-dot" />
               </Link>
               <span className="spacer" />
-              <span className={`pill ${USE_MOCKS ? "demo" : "live"}`}>
-                {USE_MOCKS ? "Demo" : "Arc mainnet"}
-              </span>
+              <span className={`pill ${USE_MOCKS ? "demo" : "live"}`}>{USE_MOCKS ? "Demo" : "Arc mainnet"}</span>
             </header>
           )}
           <main>{children}</main>
         </div>
         {showTabs && (
           <nav className="tabbar" aria-label="Main navigation">
-            {tabs.map(({ href, label, icon: Icon, match }) => {
-              const active = match(path);
+            {tabs.map((t) => {
+              if (!t)
+                return (
+                  <button key="create" className={`tab-create ${creatingNow ? "active" : ""}`} onClick={() => setCreating(true)} aria-label="Create" aria-haspopup="dialog">
+                    <span className="tab-create-btn"><Plus size={24} strokeWidth={2.6} /></span>
+                  </button>
+                );
+              const active = t.match(path);
+              const Icon = t.icon;
               return (
-                <Link key={href} href={href} className={active ? "active" : ""} aria-current={active ? "page" : undefined}>
-                  <Icon size={21} strokeWidth={active ? 2.4 : 2} />
-                  <span>{label}</span>
+                <Link key={t.href} href={t.href} className={active ? "active" : ""} aria-current={active ? "page" : undefined}>
+                  <Icon size={22} strokeWidth={2.1} />
+                  <span>{t.label}</span>
                 </Link>
               );
             })}
           </nav>
         )}
+        {creating && <CreateSheet onClose={() => setCreating(false)} />}
       </div>
     </div>
   );

@@ -915,3 +915,63 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: color-m
   border: 1.5px solid rgba(31, 107, 255, 0.45);
   animation: ping 2.2s var(--ease-out) infinite;
 }
+
+/* ───────────────────────── Tab bar v2: Home · Earn · ＋ · Apps · Activity ───────────────────────── */
+.tabbar { grid-template-columns: repeat(5, 1fr); align-items: end; }
+.tabbar a { font-size: 11px; }
+.tabbar a svg { fill: transparent; transition: fill 200ms ease; }
+.tabbar a.active { background: transparent; color: var(--blue); }
+.tabbar a.active svg { fill: color-mix(in srgb, var(--blue) 22%, transparent); }
+.tabbar a.active span { font-weight: 700; }
+.tab-create { display: grid; place-items: center; border: 0; background: none; padding: 0; height: 100%; }
+.tab-create-btn {
+  width: 54px;
+  height: 54px;
+  margin-top: -26px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: linear-gradient(160deg, #4a8dff, var(--blue-deep));
+  box-shadow: 0 10px 24px rgba(31, 107, 255, 0.4), 0 0 0 5px rgba(255, 255, 255, 0.9);
+  transition: transform 160ms var(--ease-out);
+}
+.tab-create:active .tab-create-btn { transform: scale(0.92); }
+.create-sheet h2 { font-size: 22px; font-weight: 800; }
+
+/* Home extras */
+.prize-teaser { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: var(--r); color: var(--ink); background: linear-gradient(120deg, #fff7e3, #ffffff 60%); box-shadow: var(--shadow); }
+.prize-teaser .row-icon { background: #ffeec4; color: #b77900; }
+.prize-teaser > svg { color: var(--ink-3); }
+.coin-row img { flex: none; }
+.coin-value { display: grid; justify-items: end; gap: 1px; }
+.coin-value small { font-size: 12px; color: var(--ink-3); font-weight: 500; }
+.deck-earned { font-size: 13.5px; font-weight: 600; color: var(--green); }
+
+/* Earn */
+.earn-total { font-size: 52px; }
+
+/* Apps grid */
+.app-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.app-tile { position: relative; display: grid; gap: 4px; align-content: start; padding: 16px; min-height: 120px; border-radius: var(--r); background: var(--surface); box-shadow: var(--shadow); color: var(--ink); transition: transform 160ms var(--ease-out); }
+.app-tile:active { transform: scale(0.97); }
+.app-tile.big { grid-column: span 1; min-height: 150px; }
+.app-tile strong { font-size: 15.5px; margin-top: 8px; }
+.app-tile > span:not(.app-icon) { font-size: 12.5px; color: var(--ink-3); }
+.app-tile.soon { opacity: 0.6; }
+.app-tile em { position: absolute; top: 12px; right: 12px; font-style: normal; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 999px; background: var(--surface-2); color: var(--ink-3); }
+.app-icon { width: 42px; height: 42px; border-radius: 13px; display: grid; place-items: center; }
+.tone-blue .app-icon { background: var(--blue-soft); color: var(--blue); }
+.tone-gold .app-icon { background: #ffeec4; color: #b77900; }
+.tone-violet .app-icon { background: #ece8ff; color: #6a4fe0; }
+.tone-green .app-icon { background: var(--green-soft); color: var(--green); }
+.tone-orange .app-icon { background: #ffe9d6; color: #d0670a; }
+.tone-pink .app-icon { background: #ffe4ef; color: #d23a7a; }
+.tone-teal .app-icon { background: #dcf5f3; color: #138a83; }
+.app-tile.tone-blue.big { background: linear-gradient(150deg, #e9f1ff, #fff 70%); }
+.app-tile.tone-gold.big { background: linear-gradient(150deg, #fff4dc, #fff 70%); }
+
+/* Activity */
+.row-icon.in { background: var(--green-soft); color: var(--green); }
+.row-icon.out { background: var(--surface-2); color: var(--ink-2); }
+.amount-in { color: var(--green); }
