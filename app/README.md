@@ -1,5 +1,7 @@
 # Ego mobile web app
 
+User-supplied visual reference and its interpretation: [DESIGN-REFERENCE.md](./DESIGN-REFERENCE.md). Implemented design tokens: [DESIGN.md](./DESIGN.md). Verification: [VERIFICATION.md](./VERIFICATION.md).
+
 This folder is a standalone Next.js App Router / TypeScript / Tailwind application. Set **Root Directory = `app`** in Vercel. No files outside this folder are owned by the UI.
 
 ```sh

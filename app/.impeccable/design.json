@@ -1,0 +1,521 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-13T13:26:13.948Z",
+  "title": "Design System: Ego",
+  "extensions": {
+    "colorMeta": {
+      "blue": {
+        "role": "primary",
+        "displayName": "Cobalt blue",
+        "tonalRamp": [
+          "oklch(15% 0.2 260)",
+          "oklch(26% 0.2 260)",
+          "oklch(37% 0.2 260)",
+          "oklch(48% 0.2 260)",
+          "oklch(59% 0.2 260)",
+          "oklch(70% 0.2 260)",
+          "oklch(81% 0.2 260)",
+          "oklch(95% 0.2 260)"
+        ]
+      },
+      "blue-hover": {
+        "role": "primary",
+        "displayName": "Deeper cobalt",
+        "tonalRamp": [
+          "oklch(15% 0.2 260)",
+          "oklch(26% 0.2 260)",
+          "oklch(37% 0.2 260)",
+          "oklch(48% 0.2 260)",
+          "oklch(59% 0.2 260)",
+          "oklch(70% 0.2 260)",
+          "oklch(81% 0.2 260)",
+          "oklch(95% 0.2 260)"
+        ]
+      },
+      "blue-light": {
+        "role": "primary",
+        "displayName": "Pale cobalt wash",
+        "tonalRamp": [
+          "oklch(15% 0.015 260)",
+          "oklch(26% 0.015 260)",
+          "oklch(37% 0.015 260)",
+          "oklch(48% 0.015 260)",
+          "oklch(59% 0.015 260)",
+          "oklch(70% 0.015 260)",
+          "oklch(81% 0.015 260)",
+          "oklch(95% 0.015 260)"
+        ]
+      },
+      "blue-light-hover": {
+        "role": "primary",
+        "displayName": "Stronger cobalt wash",
+        "tonalRamp": [
+          "oklch(15% 0.025 260)",
+          "oklch(26% 0.025 260)",
+          "oklch(37% 0.025 260)",
+          "oklch(48% 0.025 260)",
+          "oklch(59% 0.025 260)",
+          "oklch(70% 0.025 260)",
+          "oklch(81% 0.025 260)",
+          "oklch(95% 0.025 260)"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Deep ink",
+        "tonalRamp": [
+          "oklch(15% 0.03 250)",
+          "oklch(26% 0.03 250)",
+          "oklch(37% 0.03 250)",
+          "oklch(48% 0.03 250)",
+          "oklch(59% 0.03 250)",
+          "oklch(70% 0.03 250)",
+          "oklch(81% 0.03 250)",
+          "oklch(95% 0.03 250)"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Quiet slate",
+        "tonalRamp": [
+          "oklch(15% 0.025 250)",
+          "oklch(26% 0.025 250)",
+          "oklch(37% 0.025 250)",
+          "oklch(48% 0.025 250)",
+          "oklch(59% 0.025 250)",
+          "oklch(70% 0.025 250)",
+          "oklch(81% 0.025 250)",
+          "oklch(95% 0.025 250)"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Cool paper",
+        "tonalRamp": [
+          "oklch(15% 0.006 250)",
+          "oklch(26% 0.006 250)",
+          "oklch(37% 0.006 250)",
+          "oklch(48% 0.006 250)",
+          "oklch(59% 0.006 250)",
+          "oklch(70% 0.006 250)",
+          "oklch(81% 0.006 250)",
+          "oklch(95% 0.006 250)"
+        ]
+      },
+      "white": {
+        "role": "neutral",
+        "displayName": "White",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(37% 0 0)",
+          "oklch(48% 0 0)",
+          "oklch(59% 0 0)",
+          "oklch(70% 0 0)",
+          "oklch(81% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Soft line",
+        "tonalRamp": [
+          "oklch(15% 0.015 250)",
+          "oklch(26% 0.015 250)",
+          "oklch(37% 0.015 250)",
+          "oklch(48% 0.015 250)",
+          "oklch(59% 0.015 250)",
+          "oklch(70% 0.015 250)",
+          "oklch(81% 0.015 250)",
+          "oklch(95% 0.015 250)"
+        ]
+      },
+      "sage": {
+        "role": "semantic",
+        "displayName": "Quiet sage",
+        "tonalRamp": [
+          "oklch(15% 0.015 150)",
+          "oklch(26% 0.015 150)",
+          "oklch(37% 0.015 150)",
+          "oklch(48% 0.015 150)",
+          "oklch(59% 0.015 150)",
+          "oklch(70% 0.015 150)",
+          "oklch(81% 0.015 150)",
+          "oklch(95% 0.015 150)"
+        ]
+      },
+      "green": {
+        "role": "semantic",
+        "displayName": "Forest confirmation",
+        "tonalRamp": [
+          "oklch(15% 0.06 150)",
+          "oklch(26% 0.06 150)",
+          "oklch(37% 0.06 150)",
+          "oklch(48% 0.06 150)",
+          "oklch(59% 0.06 150)",
+          "oklch(70% 0.06 150)",
+          "oklch(81% 0.06 150)",
+          "oklch(95% 0.06 150)"
+        ]
+      },
+      "red": {
+        "role": "semantic",
+        "displayName": "Rose error",
+        "tonalRamp": [
+          "oklch(15% 0.1 20)",
+          "oklch(26% 0.1 20)",
+          "oklch(37% 0.1 20)",
+          "oklch(48% 0.1 20)",
+          "oklch(59% 0.1 20)",
+          "oklch(70% 0.1 20)",
+          "oklch(81% 0.1 20)",
+          "oklch(95% 0.1 20)"
+        ]
+      },
+      "error-surface": {
+        "role": "semantic",
+        "displayName": "Pale rose",
+        "tonalRamp": [
+          "oklch(15% 0.01 20)",
+          "oklch(26% 0.01 20)",
+          "oklch(37% 0.01 20)",
+          "oklch(48% 0.01 20)",
+          "oklch(59% 0.01 20)",
+          "oklch(70% 0.01 20)",
+          "oklch(81% 0.01 20)",
+          "oklch(95% 0.01 20)"
+        ]
+      },
+      "input-border": {
+        "role": "neutral",
+        "displayName": "Field border",
+        "tonalRamp": [
+          "oklch(15% 0.025 250)",
+          "oklch(26% 0.025 250)",
+          "oklch(37% 0.025 250)",
+          "oklch(48% 0.025 250)",
+          "oklch(59% 0.025 250)",
+          "oklch(70% 0.025 250)",
+          "oklch(81% 0.025 250)",
+          "oklch(95% 0.025 250)"
+        ]
+      },
+      "placeholder": {
+        "role": "neutral",
+        "displayName": "Field placeholder",
+        "tonalRamp": [
+          "oklch(15% 0.03 250)",
+          "oklch(26% 0.03 250)",
+          "oklch(37% 0.03 250)",
+          "oklch(48% 0.03 250)",
+          "oklch(59% 0.03 250)",
+          "oklch(70% 0.03 250)",
+          "oklch(81% 0.03 250)",
+          "oklch(95% 0.03 250)"
+        ]
+      },
+      "demo-ink": {
+        "role": "primary",
+        "displayName": "Demo blue ink",
+        "tonalRamp": [
+          "oklch(15% 0.09 260)",
+          "oklch(26% 0.09 260)",
+          "oklch(37% 0.09 260)",
+          "oklch(48% 0.09 260)",
+          "oklch(59% 0.09 260)",
+          "oklch(70% 0.09 260)",
+          "oklch(81% 0.09 260)",
+          "oklch(95% 0.09 260)"
+        ]
+      },
+      "collectible-map": {
+        "role": "artwork",
+        "displayName": "Map blue paper",
+        "tonalRamp": [
+          "oklch(15% 0.025 260)",
+          "oklch(26% 0.025 260)",
+          "oklch(37% 0.025 260)",
+          "oklch(48% 0.025 260)",
+          "oklch(59% 0.025 260)",
+          "oklch(70% 0.025 260)",
+          "oklch(81% 0.025 260)",
+          "oklch(95% 0.025 260)"
+        ]
+      },
+      "collectible-code": {
+        "role": "artwork",
+        "displayName": "Code sage paper",
+        "tonalRamp": [
+          "oklch(15% 0.02 150)",
+          "oklch(26% 0.02 150)",
+          "oklch(37% 0.02 150)",
+          "oklch(48% 0.02 150)",
+          "oklch(59% 0.02 150)",
+          "oklch(70% 0.02 150)",
+          "oklch(81% 0.02 150)",
+          "oklch(95% 0.02 150)"
+        ]
+      },
+      "collectible-qr": {
+        "role": "artwork",
+        "displayName": "QR lilac paper",
+        "tonalRamp": [
+          "oklch(15% 0.02 285)",
+          "oklch(26% 0.02 285)",
+          "oklch(37% 0.02 285)",
+          "oklch(48% 0.02 285)",
+          "oklch(59% 0.02 285)",
+          "oklch(70% 0.02 285)",
+          "oklch(81% 0.02 285)",
+          "oklch(95% 0.02 285)"
+        ]
+      },
+      "collectible-puzzle": {
+        "role": "artwork",
+        "displayName": "Puzzle warm paper",
+        "tonalRamp": [
+          "oklch(15% 0.025 85)",
+          "oklch(26% 0.025 85)",
+          "oklch(37% 0.025 85)",
+          "oklch(48% 0.025 85)",
+          "oklch(59% 0.025 85)",
+          "oklch(70% 0.025 85)",
+          "oklch(81% 0.025 85)",
+          "oklch(95% 0.025 85)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Wallet greeting",
+        "purpose": "39px base; 34px narrow and 46px desktop."
+      },
+      "headline": {
+        "displayName": "Page heading",
+        "purpose": "36px base; 40px desktop page headings."
+      },
+      "title": {
+        "displayName": "Section heading",
+        "purpose": "21px base section heading."
+      },
+      "subheading": {
+        "displayName": "Compact heading",
+        "purpose": "17px base h3; collectible overrides documented in DESIGN.md."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Root text size and paragraph leading; supporting roles use smaller sizes."
+      },
+      "label": {
+        "displayName": "Form label",
+        "purpose": "13px semibold stacked field labels."
+      },
+      "button": {
+        "displayName": "Principal button",
+        "purpose": "15px semibold, 1.3 line height."
+      },
+      "money": {
+        "displayName": "Wallet value",
+        "purpose": "Tabular numerals; 46px base, 40px narrow, 56px desktop."
+      }
+    },
+    "shadows": [
+      {
+        "name": "coin-edge",
+        "value": "inset -5px -7px 0 rgba(0, 38, 115, 0.13)",
+        "purpose": "Normal 80px coin."
+      },
+      {
+        "name": "coin-edge-large",
+        "value": "inset -7px -9px 0 rgba(0, 38, 115, 0.13)",
+        "purpose": "Large 120px coin."
+      },
+      {
+        "name": "coin-edge-small",
+        "value": "inset -2px -3px 0 rgba(0, 38, 115, 0.13)",
+        "purpose": "Small 42px coin."
+      },
+      {
+        "name": "map-legend",
+        "value": "0 2px 8px #142b4314",
+        "purpose": "Compact map legend."
+      },
+      {
+        "name": "overlay-scrim",
+        "value": "#142b4340",
+        "purpose": "Ink scrim behind modal sheets and dialogs; not a box shadow."
+      }
+    ],
+    "motion": [
+      {
+        "name": "button-state",
+        "value": "background 0.16s, transform 0.16s",
+        "purpose": "Principal button hover and pressed response."
+      },
+      {
+        "name": "coin-confirmation",
+        "value": "coin-turn 0.7s cubic-bezier(0.16, 1, 0.3, 1) both",
+        "purpose": "Confirmed find celebration."
+      },
+      {
+        "name": "loading-breathe",
+        "value": "breathe 1.2s ease-in-out infinite",
+        "purpose": "Loading-dot opacity cycle."
+      },
+      {
+        "name": "compass-response",
+        "value": "transform 0.2s ease-out",
+        "purpose": "Direction arrow rotation."
+      },
+      {
+        "name": "hold-confirmation",
+        "value": "1200ms uninterrupted hold",
+        "purpose": "JavaScript functional progress; cancellation resets to zero."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "animation: none !important; transition: none !important; scroll-behavior: auto !important",
+        "purpose": "Applied to all elements and pseudo-elements; functional JavaScript hold progress remains."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "narrow",
+        "value": "360px (max-width)"
+      },
+      {
+        "name": "desktop",
+        "value": "900px (min-width)"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Principal primary action; disabled and pressed states match the application.",
+      "html": "<button class=\"ds-primary\">Continue</button>",
+      "css": ".ds-primary{min-height:52px;padding:14px 20px;border-radius:12px;border:0;display:inline-flex;align-items:center;justify-content:center;gap:10px;font-family:\"DM Sans\", sans-serif;font-weight:600;font-size:15px;line-height:1.3;text-align:center;cursor:pointer;transition:background .16s,transform .16s;background:var(--blue, #1760dd);color:var(--white, #fff)}.ds-primary:hover:not(:disabled){background:#0d4fc5}.ds-primary:active:not(:disabled){transform:translateY(1px)}.ds-primary:focus-visible{outline:3px solid var(--blue, #1760dd);outline-offset:4px}.ds-primary:disabled{opacity:.48;cursor:not-allowed}@media(prefers-reduced-motion:reduce){.ds-primary{transition:none}}"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Principal secondary action; disabled and pressed states match the application.",
+      "html": "<button class=\"ds-secondary\">Continue</button>",
+      "css": ".ds-secondary{min-height:52px;padding:14px 20px;border-radius:12px;border:0;display:inline-flex;align-items:center;justify-content:center;gap:10px;font-family:\"DM Sans\", sans-serif;font-weight:600;font-size:15px;line-height:1.3;text-align:center;cursor:pointer;transition:background .16s,transform .16s;background:var(--blue-light, #edf3ff);color:var(--blue, #1760dd)}.ds-secondary:hover:not(:disabled){background:#dfeaff}.ds-secondary:active:not(:disabled){transform:translateY(1px)}.ds-secondary:focus-visible{outline:3px solid var(--blue, #1760dd);outline-offset:4px}.ds-secondary:disabled{opacity:.48;cursor:not-allowed}@media(prefers-reduced-motion:reduce){.ds-secondary{transition:none}}"
+    },
+    {
+      "name": "Text Action",
+      "kind": "button",
+      "refersTo": "button-text",
+      "description": "Low-emphasis action with a 44px touch height.",
+      "html": "<button class=\"ds-text\">Try again</button>",
+      "css": ".ds-text{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:44px;padding:6px 0;font-family:\"DM Sans\", sans-serif;font-weight:600;font-size:14px;color:var(--blue, #1760dd);background:none;border:0;cursor:pointer}.ds-text:hover{text-decoration:underline;text-underline-offset:4px}.ds-text:focus-visible{outline:3px solid var(--blue, #1760dd);outline-offset:4px}.ds-text:disabled{opacity:.48;cursor:not-allowed}"
+    },
+    {
+      "name": "Labelled Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Standard form field; errors are separate alerts rather than invented invalid borders.",
+      "html": "<label class=\"ds-field\">Drop code<input placeholder=\"Enter the code you were given\" /></label>",
+      "css": ".ds-field{display:flex;flex-direction:column;gap:9px;font-family:\"DM Sans\", sans-serif;font-size:13px;font-weight:600;color:var(--ink, #142b43)}.ds-field input{width:100%;border:1px solid #bccbdc;border-radius:12px;padding:14px 15px;min-height:52px;background:var(--white, #fff);color:var(--ink, #142b43);font-family:\"DM Sans\", sans-serif;font-weight:400;font-size:16px;line-height:1.4;caret-color:var(--blue, #1760dd)}.ds-field input::placeholder{color:#62778c;opacity:1}.ds-field input:focus-visible{outline:3px solid var(--blue, #1760dd);outline-offset:4px}.ds-field input:focus-visible{outline-offset:2px}"
+    },
+    {
+      "name": "Bottom Navigation",
+      "kind": "nav",
+      "refersTo": "bottom-navigation",
+      "description": "Four destinations; preview stays in flow while application navigation is fixed.",
+      "html": "<nav class=\"ds-nav\" aria-label=\"Main navigation\"><a href=\"#\" aria-current=\"page\"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 8V5a2 2 0 0 0-2-2H6a3 3 0 0 0 0 6h14v12H6a3 3 0 0 1-3-3V6\"/><path d=\"M16 13h6v4h-6z\"/></svg><span>Wallet</span></a><a href=\"#\"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3zM9 3v15M15 6v15\"/></svg><span>Explore</span></a><a href=\"#\"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"m16 8-3 5-5 3 3-5z\"/></svg><span>Find</span></a><a href=\"#\"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 5v14M5 12h14\"/></svg><span>Drop</span></a></nav>",
+      "css": ".ds-nav{display:flex;justify-content:space-around;padding:12px 12px calc(12px + env(safe-area-inset-bottom));background:var(--white, #fff);border-top:1px solid var(--line, #dce4ed);font-family:\"DM Sans\", sans-serif}.ds-nav a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-width:62px;min-height:46px;color:var(--muted, #526779);font-size:11px;font-weight:500;border-radius:12px;text-decoration:none}.ds-nav a[aria-current=\"page\"]{color:var(--blue, #1760dd)}.ds-nav a:hover{background:var(--paper, #f6f8fb)}.ds-nav a:focus-visible{outline:3px solid var(--blue, #1760dd);outline-offset:4px}@media(min-width:900px){.ds-nav{padding:16px 20px}.ds-nav a{flex-direction:row;gap:9px;font-size:13px;min-width:100px}}"
+    },
+    {
+      "name": "Demo Pill",
+      "kind": "chip",
+      "refersTo": "demo-chip",
+      "description": "Persistent identification of illustrative currency.",
+      "html": "<span class=\"ds-demo\">Demo · fake USDC</span>",
+      "css": ".ds-demo{display:inline-block;font-family:\"DM Sans\", sans-serif;font-size:11px;font-weight:600;padding:6px 9px;background:var(--blue-light, #edf3ff);color:#245292;border-radius:100px;white-space:nowrap}"
+    },
+    {
+      "name": "Original Coin",
+      "kind": "custom",
+      "refersTo": "coin",
+      "description": "Decorative original CSS geometry; static specimen uses the normal size.",
+      "html": "<div class=\"ds-coin\" aria-hidden=\"true\"><span class=\"ds-orbit\"></span><span class=\"ds-dollar\">$</span><span class=\"ds-notch ds-one\"></span><span class=\"ds-notch ds-two\"></span></div>",
+      "css": ".ds-coin{position:relative;flex-shrink:0;display:flex;align-items:center;justify-content:center;border-radius:50%;background:var(--blue, #1760dd);color:var(--white, #fff);box-shadow:inset -5px -7px 0 rgba(0,38,115,.13);width:80px;height:80px}.ds-orbit{position:absolute;inset:11%;border:2px solid #fff;border-radius:50%;opacity:.75}.ds-dollar{font-family:\"Manrope\", sans-serif;font-size:42px;font-weight:600;line-height:1}.ds-notch{position:absolute;top:42%;width:10%;height:17%;background:var(--blue, #1760dd)}.ds-one{left:7%}.ds-two{right:7%}"
+    },
+    {
+      "name": "Collectible Card",
+      "kind": "card",
+      "refersTo": "collectible-card",
+      "description": "Map variant of the recurring keepsake card.",
+      "html": "<article class=\"ds-card\"><div class=\"ds-art\"><span class=\"ds-art-orbit ds-orbit-one\"></span><span class=\"ds-art-orbit ds-orbit-two\"></span><div class=\"ds-coin\" aria-hidden=\"true\"><span class=\"ds-orbit\"></span><span class=\"ds-dollar\">$</span><span class=\"ds-notch ds-one\"></span><span class=\"ds-notch ds-two\"></span></div><span class=\"ds-dot ds-dot-one\"></span><span class=\"ds-dot ds-dot-two\"></span></div><div class=\"ds-copy\"><span class=\"ds-small\">Enugu edition · map drop</span><h3>Good things nearby</h3><p>From a local creator</p><span class=\"ds-stamp\"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m20 6-11 11-5-5\"/></svg>Collected on Arc</span></div></article>",
+      "css": ".ds-coin{position:relative;flex-shrink:0;display:flex;align-items:center;justify-content:center;border-radius:50%;background:var(--blue, #1760dd);color:var(--white, #fff);box-shadow:inset -5px -7px 0 rgba(0,38,115,.13);width:80px;height:80px}.ds-orbit{position:absolute;inset:11%;border:2px solid #fff;border-radius:50%;opacity:.75}.ds-dollar{font-family:\"Manrope\", sans-serif;font-size:42px;font-weight:600;line-height:1}.ds-notch{position:absolute;top:42%;width:10%;height:17%;background:var(--blue, #1760dd)}.ds-one{left:7%}.ds-two{right:7%}.ds-card{background:var(--white, #fff);border-radius:16px;overflow:hidden;font-family:\"DM Sans\", sans-serif;color:var(--ink, #142b43)}.ds-art{height:160px;position:relative;background:#e8effd;display:flex;align-items:center;justify-content:center;overflow:hidden}.ds-art .ds-coin{z-index:1;transform:rotate(-12deg)}.ds-art-orbit{position:absolute;border:1px solid #a5bde7;border-radius:50%;height:160px;width:160px}.ds-orbit-one{transform:translate(40px,-44px)}.ds-orbit-two{transform:translate(-50px,48px);width:190px;height:190px}.ds-dot{position:absolute;width:8px;height:8px;background:#86a9e2;border-radius:50%}.ds-dot-one{top:28px;left:30px}.ds-dot-two{bottom:24px;right:24px;width:5px;height:5px}.ds-copy{padding:16px}.ds-small{font-size:11px;font-weight:500;color:var(--muted, #526779)}.ds-copy h3{font-family:\"Manrope\", sans-serif;font-size:15px;font-weight:700;letter-spacing:-.015em;margin:8px 0}.ds-copy p{font-size:12px;line-height:1.6;color:var(--muted, #526779);margin:0 0 12px}.ds-stamp{font-size:10px;display:flex;align-items:center;gap:4px;color:var(--blue, #1760dd)}.ds-stamp svg{width:14px;height:14px}"
+    },
+    {
+      "name": "Safety Panel",
+      "kind": "card",
+      "refersTo": "safety-card",
+      "description": "Sage grouping for safe hunt constraints and a reporting action.",
+      "html": "<section class=\"ds-safety\" aria-label=\"Hunt safely\"><strong>A little adventure. A safe one.</strong><div class=\"ds-rules\"><span>1–5 USDC per drop</span><span>Daytime only</span><span>Public places only</span></div><p>Stay on public paths. Exact locations unlock only within 30 m.</p><button class=\"ds-report\">Report this location</button></section>",
+      "css": ".ds-safety{background:var(--sage, #eaf4ed);padding:18px;border-radius:16px;margin:26px 0;color:var(--green, #275e43);font-family:\"DM Sans\", sans-serif}.ds-safety strong{font-size:13px}.ds-rules{display:flex;flex-wrap:wrap;gap:10px 14px;margin-top:14px}.ds-rules span{font-size:11px;font-weight:500}.ds-safety p{font-size:12px;color:inherit;margin:14px 0 0;line-height:1.6}.ds-report{display:inline-flex;min-height:44px;align-items:center;justify-content:center;gap:7px;padding:6px 0;font-family:\"DM Sans\", sans-serif;font-weight:600;font-size:12px;color:inherit;background:none;border:0;margin-top:4px;cursor:pointer}.ds-report:hover{text-decoration:underline;text-underline-offset:4px}.ds-report:focus-visible{outline:3px solid var(--blue, #1760dd);outline-offset:4px}"
+    },
+    {
+      "name": "Hold Claim Control",
+      "kind": "custom",
+      "refersTo": "button-primary",
+      "description": "Visual specimen of functional hold feedback; this sidecar preview has no claim runtime.",
+      "html": "<div class=\"ds-hold-wrap\"><button class=\"ds-hold\"><span class=\"ds-progress\"></span><span class=\"ds-hold-label\">Hold to claim</span></button><p class=\"ds-help\">Hold for 1.2 seconds. Keyboard: hold Space or Enter.</p></div>",
+      "css": ".ds-hold{min-height:52px;padding:14px 20px;border-radius:12px;border:0;display:inline-flex;align-items:center;justify-content:center;gap:10px;font-family:\"DM Sans\", sans-serif;font-weight:600;font-size:15px;line-height:1.3;text-align:center;cursor:pointer;transition:background .16s,transform .16s;position:relative;overflow:hidden;width:100%;user-select:none;touch-action:none;min-height:58px;background:var(--blue, #1760dd);color:var(--white, #fff)}.ds-progress{position:absolute;inset:0 auto 0 0;width:0;background:#ffffff35;pointer-events:none}.ds-hold-label{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;gap:12px}.ds-hold:hover:not(:disabled){background:#0d4fc5}.ds-hold:active:not(:disabled){transform:translateY(1px)}.ds-hold:focus-visible{outline:3px solid var(--blue, #1760dd);outline-offset:4px}.ds-hold:disabled{opacity:.48;cursor:not-allowed}.ds-help{font-family:\"DM Sans\", sans-serif;font-size:12px;line-height:1.55;margin:10px 0;color:var(--muted, #526779);text-align:center}@media(prefers-reduced-motion:reduce){.ds-hold{transition:none}}"
+    }
+  ],
+  "narrative": {
+    "northStar": "A clear city-walk companion",
+    "overview": "Ego uses a clean, light, calm, premium visual world with generous spacing and an original blue coin motif. Chalk-white surfaces, deep ink typography and cobalt money cues make a small mobile utility feel composed and approachable. Quiet sage surfaces frame safety and confirmed outcomes.\n\nWallet-first is a confirmed product decision. The coin is a reusable original geometric signature across the wallet, drop discovery and collectible artwork. Illustrative balances, creators and collectibles remain visibly identified as demo content; visual polish must not imply live funds.",
+    "keyCharacteristics": [
+      "Light tonal surfaces with restrained depth.",
+      "Manrope headings and money paired with DM Sans body and controls.",
+      "Generous mobile spacing and persistent thumb-reachable navigation.",
+      "Original blue coin geometry, circular uncertainty and quiet sage safety cues."
+    ],
+    "rules": [
+      {
+        "name": "The Money Cue Rule",
+        "body": "Keep cobalt attached to actions, value and the original coin; preserve sage for safety and confirmation.",
+        "section": "colors"
+      },
+      {
+        "name": "The Readable Field Rule",
+        "body": "Preserve 16px field text and tabular numerals for monetary and distance readings.",
+        "section": "typography"
+      },
+      {
+        "name": "The Pocket Width Rule",
+        "body": "Keep form and wallet content constrained; use the desktop rail to add context without stretching mobile controls.",
+        "section": "layout"
+      },
+      {
+        "name": "The Quiet Depth Rule",
+        "body": "Use tonal grouping for ordinary surfaces; reserve inset depth for the coin and ambient shadow for map overlays.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do retain the clean light surfaces, generous mobile spacing and original blue coin geometry.",
+      "Do pair self-hosted Manrope headings and money with DM Sans body and controls.",
+      "Do preserve visible focus, labelled fields, live feedback and safe-area clearance.",
+      "Do keep demo identification visible and celebration contingent on confirmed claim state.",
+      "Do keep safety and recovery information adjacent to location-based actions.",
+      "Do preserve reduced-motion CSS and cancelable hold behavior."
+    ],
+    "donts": [
+      "Don't copy another app's coin artwork or visual identity.",
+      "Don't stretch phone forms to fill desktop space.",
+      "Don't introduce heavy floating shadows on ordinary cards.",
+      "Don't represent illustrative balances or collectibles as live funds.",
+      "Don't animate the decorative coin when reduced motion is requested."
+    ]
+  }
+}
