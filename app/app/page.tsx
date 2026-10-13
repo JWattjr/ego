@@ -15,7 +15,8 @@ import {
   QrCode,
   Ticket,
 } from "lucide-react";
-import { getNearby, getWallet, USE_MOCKS } from "@/lib/api";
+import { connectWallet, getNearby, getWallet, USE_MOCKS } from "@/lib/api";
+import { MyCampaigns } from "@/components/my-campaigns";
 import type { DropPublic, WalletView } from "@/lib/types";
 import { money, shortAddress } from "@/lib/format";
 import { Amount, Coin, CollectibleCard, ErrorMessage, Loading, Safety } from "@/components/ui";
@@ -82,7 +83,16 @@ export default function WalletHome() {
             </button>
           </span>
           {wallet ? <Amount base={wallet.balance} hidden={hidden} /> : <span className="amount">—</span>}
-          <span className="balance-address">{wallet?.address ? shortAddress(wallet.address) : "No wallet connected yet"}</span>
+          {wallet?.address ? (
+            <span className="balance-address">{shortAddress(wallet.address)} · Arc</span>
+          ) : (
+            <button
+              className="button primary connect-button"
+              onClick={() => connectWallet().then(load).catch((e) => setError(e instanceof Error ? e.message : "Couldn't connect your wallet."))}
+            >
+              Connect wallet
+            </button>
+          )}
         </div>
         <Coin3D size={132} />
       </section>
@@ -155,6 +165,8 @@ export default function WalletHome() {
           </Link>
         </div>
       </section>
+
+      <MyCampaigns />
 
       <section className="section rise rise-4">
         <div className="section-title">

@@ -845,3 +845,8 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: color-m
 .hide-done p { color: var(--ink-2); font-size: 14px; }
 .hide-done-coins { position: relative; height: 130px; width: 100%; display: grid; place-items: center; }
 .hide-done-coins .coin-sm { position: absolute; left: 50%; top: 50%; margin: -17px; animation: burst 1200ms var(--ease-out) both; }
+.connect-button { width: auto; height: 38px; padding: 0 16px; font-size: 14px; justify-self: start; margin-top: 6px; }
+.mine-row { align-items: center; }
+.mine-refund { width: auto; height: 38px; padding: 0 14px; font-size: 13.5px; flex: none; }
+.mine-msg { font-size: 12.5px; color: var(--green); }
+.mine-msg a { color: var(--blue); display: inline-flex; align-items: center; gap: 2px; }

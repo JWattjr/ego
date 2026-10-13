@@ -21,7 +21,8 @@
     "react-dom": "^19.2.0",
     "react-leaflet": "^5.0.0",
     "react-qr-code": "^2.0.18",
-    "three": "^0.186.1"
+    "three": "^0.186.1",
+    "viem": "^2.57.5"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.0",

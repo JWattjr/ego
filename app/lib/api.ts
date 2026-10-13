@@ -16,6 +16,7 @@ import type {
   WalletView,
 } from "./types";
 import { distance, ENUGU } from "./format";
+import * as chain from "./wallet";
 
 // The single switch for checking-server requests. No screen calls fetch.
 export const USE_MOCKS = process.env.NEXT_PUBLIC_USE_MOCKS !== "false";
@@ -509,6 +510,7 @@ export async function getFound(dropId: string): Promise<FoundView | null> {
   return null;
 }
 export function rememberFound(view: FoundView) {
+  if (!USE_MOCKS) saveLiveCollectible(view.collectible);
   if (typeof window !== "undefined")
     sessionStorage.setItem(
       `ego.found.${view.drop.dropId}`,
@@ -616,11 +618,15 @@ export async function submitDeposit(
 ): Promise<string> {
   // TODO(wallet): approve the exact six-decimal USDC amount, then call
   // EgoDrops.createCampaign(campaignId, total, endsAt, onePerWallet) on ARC.
-  if (!USE_MOCKS)
-    throw new ApiError(
-      "wallet_not_connected",
-      "Connect your wallet to fund this campaign. Nothing has been deposited.",
-    );
+  if (!USE_MOCKS) {
+    try {
+      const hash = await chain.fundCampaign(deposit.campaignId as `0x${string}`, BigInt(deposit.total), input.endsAt, input.onePerWallet);
+      rememberMine({ campaignId: deposit.campaignId, title: input.title, total: deposit.total, endsAt: input.endsAt, kind: input.drops[0]?.kind ?? "map" });
+      return hash;
+    } catch (e) {
+      throw walletError(e, "Funding failed. Nothing was deposited.");
+    }
+  }
   void input;
   await wait();
   if (BigInt(state().wallet.balance) < BigInt(deposit.total))
@@ -659,7 +665,12 @@ export async function confirmCampaign(
 export async function getWallet(): Promise<WalletView> {
   // TODO(wallet): read connected ARC wallet's six-decimal ERC-20 USDC balance
   // and EgoDrops collectible holdings. There is no wallet endpoint in INTERFACE.md.
-  if (!USE_MOCKS) return { address: "", balance: "0", collectibles: [] };
+  if (!USE_MOCKS) {
+    const address = await chain.currentAddress();
+    if (!address) return { address: "", balance: "0", collectibles: liveCollectibles() };
+    const balance = await chain.usdcBalance(address).catch(() => 0n);
+    return { address, balance: balance.toString(), collectibles: liveCollectibles() };
+  }
   await wait();
   return { ...state().wallet, collectibles: [...state().wallet.collectibles] };
 }
@@ -668,11 +679,16 @@ export async function sendMoney(
   amount: string,
 ): Promise<{ txHash: string; explorerUrl: string }> {
   // TODO(wallet): Circle user-controlled wallet USDC transfer with Gas Station.
-  if (!USE_MOCKS)
-    throw new ApiError(
-      "wallet_not_connected",
-      "Connect your wallet before sending. Nothing has been sent.",
-    );
+  if (!USE_MOCKS) {
+    if (!/^0x[\da-fA-F]{40}$/.test(to)) throw new ApiError("invalid_wallet", "Enter a full 0x wallet address.");
+    if (!/^\d+$/.test(amount) || BigInt(amount) <= 0n) throw new ApiError("invalid_amount", "Enter an amount greater than zero.");
+    try {
+      const txHash = await chain.transferUsdc(to as `0x${string}`, BigInt(amount));
+      return { txHash, explorerUrl: `${chain.EXPLORER}/tx/${txHash}` };
+    } catch (e) {
+      throw walletError(e, "Sending failed. Nothing was sent.");
+    }
+  }
   await wait();
   if (!/^0x[\da-fA-F]{40}$/.test(to))
     throw new ApiError("invalid_wallet", "Enter a full 0x wallet address.");
@@ -858,4 +874,67 @@ export async function claimPrize(prize: Prize, to: string): Promise<string> {
     collectible,
   });
   return prize.dropId;
+}
+
+/* ───────────── Live mode: wallet, gas-free claims, my campaigns ───────────── */
+export { connectWallet } from "./wallet";
+
+// Wallet errors (user rejected, wrong network, low balance) become friendly ApiErrors.
+function walletError(e: unknown, fallback: string) {
+  const msg = (e as { shortMessage?: string; message?: string })?.shortMessage ?? (e as Error)?.message ?? "";
+  if (/reject|denied|cancel/i.test(msg)) return new ApiError("rejected", "You cancelled in your wallet. Nothing was sent.");
+  if (e instanceof chain.WalletError) return new ApiError(e.code, e.message);
+  return new ApiError("wallet", `${fallback} ${msg}`.trim());
+}
+
+// The server checks the proof, signs, submits the claim and pays the gas. The finder needs only an address.
+export function relayClaim(input: { campaignId: string; dropId: string; to: string; proof: ClaimProof }) {
+  return request<{ txHash: string; explorerUrl: string; confirmedMs: number }>("/api/claims/relay", input);
+}
+
+const COLLECTIBLES_KEY = "ego.collectibles";
+function liveCollectibles(): Collectible[] {
+  try {
+    return JSON.parse(localStorage.getItem(COLLECTIBLES_KEY) ?? "[]") as Collectible[];
+  } catch {
+    return [];
+  }
+}
+function saveLiveCollectible(c: Collectible) {
+  try {
+    localStorage.setItem(COLLECTIBLES_KEY, JSON.stringify([c, ...liveCollectibles().filter((x) => x.id !== c.id)]));
+  } catch {
+    /* storage is optional */
+  }
+}
+
+export type MyCampaign = { campaignId: string; title: string; total: string; endsAt: number; kind: DropKind };
+const MINE_KEY = "ego.mine";
+export function myCampaigns(): MyCampaign[] {
+  try {
+    return JSON.parse(localStorage.getItem(MINE_KEY) ?? "[]") as MyCampaign[];
+  } catch {
+    return [];
+  }
+}
+function rememberMine(c: MyCampaign) {
+  try {
+    localStorage.setItem(MINE_KEY, JSON.stringify([c, ...myCampaigns().filter((x) => x.campaignId !== c.campaignId)]));
+  } catch {
+    /* storage is optional */
+  }
+}
+// Live status straight from the contract: what's left, and whether it has already come back.
+export async function myCampaignStatus(campaignId: string) {
+  if (USE_MOCKS) return null;
+  const c = await chain.campaignOnChain(campaignId as `0x${string}`);
+  return { left: (c.deposited - c.claimed).toString(), endsAt: c.endsAt, refunded: c.refunded };
+}
+export async function refundMine(campaignId: string) {
+  try {
+    const txHash = await chain.refundCampaign(campaignId as `0x${string}`);
+    return { txHash, explorerUrl: `${chain.EXPLORER}/tx/${txHash}` };
+  } catch (e) {
+    throw walletError(e, "The refund failed.");
+  }
 }

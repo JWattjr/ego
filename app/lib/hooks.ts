@@ -61,6 +61,23 @@ export function useClaim(drop: DropPublic | null, proof: ClaimProof | null) {
     setBusy(true);
     setError("");
     try {
+      if (!api.USE_MOCKS) {
+        setPhase("Checking and paying on Arc…");
+        const wallet = await api.getWallet();
+        if (!wallet.address)
+          throw new api.ApiError("wallet_not_connected", "Connect your wallet first: tap Connect on the home screen. Claiming is free.");
+        const r = await api.relayClaim({ campaignId: drop.campaignId, dropId: drop.dropId, to: wallet.address, proof });
+        const campaign = await api.getCampaign(drop.campaignId);
+        api.rememberFound({
+          explorerUrl: r.explorerUrl,
+          confirmedMs: r.confirmedMs,
+          drop,
+          campaign: { ...campaign, drops: campaign.drops.length },
+          collectible: { id: drop.campaignId, title: campaign.title, creatorName: drop.creatorName, kind: drop.kind, earnedAt: Math.floor(Date.now() / 1000) },
+        });
+        router.push(`/found/${drop.dropId}`);
+        return;
+      }
       if (!pending.current || pending.current.dropId !== drop.dropId) {
         setPhase("Checking your proof…");
         const wallet = await api.getWallet();
