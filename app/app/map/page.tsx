@@ -1,150 +1,111 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { ArrowRight, LocateFixed, MapPin, X } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { ArrowRight, Footprints, Flag, LocateFixed, MapPin, ShieldCheck, Sparkles } from "lucide-react";
 import { DropMap } from "@/components/map-loader";
-import {
-  Coin,
-  ErrorMessage,
-  FocusDialog,
-  KindLabel,
-  Loading,
-  PageTitle,
-  ReportDialog,
-  Safety,
-} from "@/components/ui";
+import { Coin, ErrorMessage, KindLabel, ReportDialog } from "@/components/ui";
 import { getNearby, isReported, reportLocation } from "@/lib/api";
 import { usePosition } from "@/lib/hooks";
 import { ENUGU, money } from "@/lib/format";
 import type { DropPublic } from "@/lib/types";
+
 export default function MapPage() {
   const [drops, setDrops] = useState<DropPublic[]>([]),
-    [selected, setSelected] = useState<DropPublic | null>(null),
+    [selectedId, setSelectedId] = useState<string | null>(null),
     [loading, setLoading] = useState(true),
     [error, setError] = useState(""),
     [report, setReport] = useState(false);
   const gps = usePosition();
   useEffect(() => {
     let live = true;
-    setLoading(true);
     getNearby(gps.position ?? undefined)
       .then((d) => {
-        if (live) {
-          setDrops(d.filter((item) => !isReported(item.dropId)));
-          setError("");
-        }
+        if (!live) return;
+        setDrops(d.filter((item) => !isReported(item.dropId) && !item.claimed));
+        setError("");
       })
-      .catch((e) => {
-        if (live) setError(e.message);
-      })
-      .finally(() => {
-        if (live) setLoading(false);
-      });
+      .catch((e) => live && setError(e.message))
+      .finally(() => live && setLoading(false));
     return () => {
       live = false;
     };
   }, [gps.position]);
+
+  const total = useMemo(() => drops.reduce((s, d) => s + BigInt(d.amount), 0n).toString(), [drops]);
+  const selected = drops.find((d) => d.dropId === selectedId) ?? null;
+  const walkMin = (m?: number) => (m === undefined ? null : Math.max(1, Math.round(m / 80)));
+
   return (
-    <div className="page map-page">
-      <PageTitle
-        title="Good things nearby"
-        description="A little walk. A little discovery."
+    <div className="map-screen">
+      <DropMap
+        drops={drops}
+        selectedId={selectedId ?? undefined}
+        onSelect={(d) => setSelectedId(d.dropId)}
+        position={gps.position}
+        center={selected?.approx ?? gps.position ?? ENUGU}
+        zoom={15}
+        offsetY={selected ? 170 : 0}
       />
-      <div className="map-toolbar">
-        <span>
-          <MapPin size={16} />
-          Enugu · public places
-        </span>
-        <button className="text-button" onClick={gps.enable}>
-          <LocateFixed size={17} />
-          Use my location
+
+      <div className="map-top">
+        <div className="map-campaign">
+          <Coin size="sm" />
+          <div>
+            <strong>{loading ? "Looking around Enugu…" : `${drops.length} drops hidden nearby`}</strong>
+            <span>{money(total)} USDC waiting in public places</span>
+          </div>
+        </div>
+        <button className="icon-button" onClick={gps.enable} aria-label="Use my location">
+          <LocateFixed size={19} />
         </button>
       </div>
-      {(error || gps.error) && <ErrorMessage message={error || gps.error} />}
-      <div className="map-stage">
-        <DropMap
-          drops={drops}
-          onSelect={setSelected}
-          position={gps.position}
-          center={gps.position ?? ENUGU}
-        />
-        <div className="map-legend">
-          <span className="legend-circle" />
-          Approximate areas, not exact spots
-        </div>
-      </div>
-      {loading && <Loading text="Looking for nearby drops…" />}
-      <section className="section">
-        <div className="section-title">
-          <h2>
-            {drops.length
-              ? `${drops.length} ${drops.length === 1 ? "reason" : "reasons"} to step outside`
-              : "A quiet corner, for now"}
-          </h2>
-        </div>
-        {!loading && !drops.length && (
-          <p>
-            No drops in this area yet. Check back soon, or create a little joy
-            for someone else.
-          </p>
-        )}
-        <div className="drop-list">
-          {drops.map((d) => (
-            <button
-              className="drop-row"
-              key={d.dropId}
-              onClick={() => setSelected(d)}
-            >
-              <Coin size="small" />
-              <div>
-                <strong>{d.title}</strong>
-                <span>
-                  From {d.creatorName}
-                  {d.distanceM !== undefined ? ` · ${d.distanceM} m away` : ""}
-                </span>
-              </div>
-              <span className="drop-amount">
-                {money(d.amount)}
-                <small>USDC</small>
-              </span>
-            </button>
-          ))}
-        </div>
-      </section>
-      <Safety compact />
-      {selected && (
-        <div className="sheet-backdrop" onClick={() => setSelected(null)}>
-          <FocusDialog
-            className="drop-sheet"
-            labelledBy="drop-title"
-            onClose={() => setSelected(null)}
-          >
-            <div className="sheet-handle" />
-            <button
-              className="icon-button dialog-close"
-              aria-label="Close drop details"
-              onClick={() => setSelected(null)}
-            >
-              <X size={20} />
-            </button>
-            <KindLabel kind={selected.kind} />
-            <h2 id="drop-title">{selected.title}</h2>
-            <div className="sheet-amount">
-              <Coin size="small" />
-              <strong>{money(selected.amount)} USDC</strong>
-            </div>
-            <p>From {selected.creatorName}</p>
-            <p className="clue">{selected.hint}</p>
-            <Safety compact onReport={() => setReport(true)} />
-            <Link
-              className="button primary"
-              href={`/hunt/${selected.dropId}?campaignId=${selected.campaignId}`}
-            >
-              Start the hunt <ArrowRight size={20} />
-            </Link>
-          </FocusDialog>
+
+      {(error || gps.error) && (
+        <div className="map-sheet" style={{ bottom: "auto", top: 80 }}>
+          <ErrorMessage message={error || gps.error} />
         </div>
       )}
+
+      {selected ? (
+        <section className="map-sheet" key={selected.dropId} aria-labelledby="drop-title">
+          <div className="map-sheet-head">
+            <Coin size="md" float />
+            <div>
+              <h2 id="drop-title">{money(selected.amount)} USDC drop</h2>
+              <p>
+                {selected.title}
+                {selected.distanceM !== undefined && ` · ${selected.distanceM} m · ${walkMin(selected.distanceM)} min walk`}
+              </p>
+            </div>
+            <KindLabel kind={selected.kind} />
+          </div>
+          <ul className="facts">
+            <li><Sparkles size={17} /> Hidden by {selected.creatorName}</li>
+            <li><MapPin size={17} /> The exact spot shows up 30 m away</li>
+            <li><ShieldCheck size={17} /> Only ever in public places, in daylight</li>
+          </ul>
+          <Link className="button primary" href={`/hunt/${selected.dropId}?campaignId=${selected.campaignId}`}>
+            <Footprints size={19} /> Start the hunt
+          </Link>
+          <button className="text-button" style={{ justifySelf: "center", color: "var(--ink-3)" }} onClick={() => setReport(true)}>
+            <Flag size={14} /> Report this location
+          </button>
+        </section>
+      ) : (
+        !loading && (
+          <section className="map-sheet">
+            <p className="map-empty">
+              {drops.length ? "Tap a coin to see what's hidden there." : "A quiet corner, for now. Hide a little joy for someone else."}
+            </p>
+            {!drops.length && (
+              <Link href="/create" className="button secondary">
+                Hide a drop <ArrowRight size={18} />
+              </Link>
+            )}
+          </section>
+        )
+      )}
+
       {report && selected && (
         <ReportDialog
           onClose={() => setReport(false)}
@@ -152,15 +113,11 @@ export default function MapPage() {
             try {
               await reportLocation(selected.dropId);
               setDrops((ds) => ds.filter((d) => d.dropId !== selected.dropId));
-              setSelected(null);
-              setReport(false);
+              setSelectedId(null);
             } catch (e) {
+              setError(e instanceof Error ? e.message : "The report failed. Please try again.");
+            } finally {
               setReport(false);
-              setError(
-                e instanceof Error
-                  ? e.message
-                  : "The report failed. Please try again.",
-              );
             }
           }}
         />

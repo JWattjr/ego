@@ -1,89 +1,101 @@
 "use client";
 import Link from "next/link";
 import { use, useEffect, useState } from "react";
-import { ArrowRight, Check, ExternalLink } from "lucide-react";
+import { Check, ExternalLink, Share2, Zap } from "lucide-react";
 import { getFound, USE_MOCKS } from "@/lib/api";
 import type { FoundView } from "@/lib/types";
 import { money } from "@/lib/format";
 import { Coin, CollectibleCard, ErrorMessage, Loading } from "@/components/ui";
-export default function FoundPage({
-  params,
-}: {
-  params: Promise<{ dropId: string }>;
-}) {
+
+// One celebratory burst of coins: shown once per find, so a little delight is earned.
+const BURST = Array.from({ length: 10 }, (_, i) => {
+  const a = (i / 10) * Math.PI * 2;
+  return { x: `${Math.cos(a) * 150}px`, y: `${Math.sin(a) * 150 - 40}px`, r: `${(i % 2 ? 1 : -1) * 120}deg`, d: `${i * 25}ms` };
+});
+
+export default function FoundPage({ params }: { params: Promise<{ dropId: string }> }) {
   const { dropId } = use(params),
     [view, setView] = useState<FoundView | null>(null),
-    [loading, setLoading] = useState(true);
+    [loading, setLoading] = useState(true),
+    [shared, setShared] = useState(false);
   useEffect(() => {
-    getFound(dropId)
-      .then(setView)
-      .finally(() => setLoading(false));
+    getFound(dropId).then(setView).finally(() => setLoading(false));
   }, [dropId]);
-  if (loading)
-    return (
-      <div className="page">
-        <Loading text="Unwrapping your find…" />
-      </div>
-    );
+
+  if (loading) return <div className="page"><Loading text="Unwrapping your find…" /></div>;
   if (!view)
     return (
       <div className="page">
-        <ErrorMessage message="There is no confirmed claim here yet. Find and claim a drop first." />
-        <Link href="/map" className="button primary">
-          Explore nearby drops
-        </Link>
+        <ErrorMessage message="No confirmed claim here yet. Find and claim a drop first." />
+        <Link href="/map" className="button primary">Explore nearby drops</Link>
       </div>
     );
+
+  const amount = money(view.drop.amount);
+  const share = async () => {
+    const text = `I just found ${amount} USDC hidden in ${view.drop.title} on Ego. Confirmed on Arc in ${(view.confirmedMs / 1000).toFixed(1)} s.`;
+    try {
+      if (navigator.share) await navigator.share({ text, url: view.explorerUrl });
+      else {
+        await navigator.clipboard.writeText(`${text} ${view.explorerUrl}`);
+        setShared(true);
+      }
+    } catch {
+      /* the person closed the share sheet */
+    }
+  };
+
   return (
-    <div className="page found-page">
-      <div className="found-coin">
-        <Coin size="large" spin />
-        <span className="found-check">
-          <Check size={22} />
-        </span>
+    <div className="scene found-scene">
+      <span className="beam" />
+      <div className="scene-top">
+        <span />
+        <span className="here-pill">Found</span>
+        <span />
       </div>
-      <h1>
-        You found
-        <br />
-        <span>{money(view.drop.amount)} USDC.</span>
-      </h1>
-      <p className="found-from">A little joy from {view.drop.creatorName}.</p>
-      <div className="receipt-pill">
-        <Check size={16} />
-        Confirmed in {(view.confirmedMs / 1000).toFixed(1)} s
-        {USE_MOCKS ? " · demo receipt" : ""}
+      <div className="scene-center">
+        <div className="scene-coin" style={{ position: "relative" }}>
+          <Coin size="lg" spin />
+          <div className="burst" aria-hidden="true">
+            {BURST.map((b, i) => (
+              <Coin key={i} size="sm" style={{ "--x": b.x, "--y": b.y, "--r": b.r, animationDelay: b.d } as React.CSSProperties} />
+            ))}
+          </div>
+        </div>
       </div>
-      <p className="found-remaining">
-        {view.campaign.dropsLeft}{" "}
-        {view.campaign.dropsLeft === 1 ? "drop is" : "drops are"} still hidden
-        in this campaign.
-      </p>
-      <div className="found-collectible">
-        <CollectibleCard item={view.collectible} large />
-      </div>
-      <p className="help-text">
-        A keepsake of your find, now in your collection.
-      </p>
-      <Link href="/" className="button primary">
-        Back to your wallet <ArrowRight size={19} />
-      </Link>
-      <Link href="/map" className="button secondary">
-        Find another little joy
-      </Link>
-      <a
-        href={view.explorerUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="explorer-link"
-      >
-        View on Arc Explorer <ExternalLink size={15} />
-      </a>
-      {USE_MOCKS && (
-        <p className="demo-note">
-          The amount and confirmation are simulated. This demo transaction hash
-          will not appear on the live explorer.
-        </p>
-      )}
+
+      <section className="found-sheet" aria-labelledby="found-title">
+        <span className="found-badge"><Coin size="md" /></span>
+        <div className="found-title">
+          <h1 id="found-title">You found {amount} USDC</h1>
+          <p>{amount} USDC from {view.drop.creatorName}</p>
+          <span className="in-wallet"><Check size={14} /> In your wallet</span>
+        </div>
+        <dl className="found-facts">
+          <div>
+            <dt>Found in</dt>
+            <dd>{view.drop.title}</dd>
+          </div>
+          <div>
+            <dt>Confirmed in</dt>
+            <dd><Zap size={14} color="var(--blue)" /> {(view.confirmedMs / 1000).toFixed(1)} seconds{USE_MOCKS ? " (demo)" : ""}</dd>
+          </div>
+          <div>
+            <dt>Still hidden</dt>
+            <dd>{view.campaign.dropsLeft} {view.campaign.dropsLeft === 1 ? "drop" : "drops"}</dd>
+          </div>
+        </dl>
+        <CollectibleCard item={view.collectible} />
+        <div className="found-actions">
+          <button className="button secondary" onClick={share}>
+            <Share2 size={18} /> {shared ? "Copied" : "Share"}
+          </button>
+          <Link href="/map" className="button primary">Keep hunting</Link>
+        </div>
+        <a href={view.explorerUrl} target="_blank" rel="noopener noreferrer" className="explorer-link">
+          View on Arc Explorer <ExternalLink size={13} />
+        </a>
+      </section>
     </div>
   );
 }

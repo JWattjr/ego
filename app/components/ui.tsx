@@ -42,23 +42,53 @@ export function FocusDialog({
   );
 }
 
+const COIN_SIZES = { small: "sm", normal: "md", large: "lg" } as const;
+type CoinSize = keyof typeof COIN_SIZES | "xs" | "sm" | "md" | "lg" | "xl";
 export function Coin({
   size = "normal",
   spin = false,
+  float = false,
+  className = "",
+  style,
 }: {
-  size?: "small" | "normal" | "large";
+  size?: CoinSize;
   spin?: boolean;
+  float?: boolean;
+  className?: string;
+  style?: React.CSSProperties;
 }) {
+  const s = size in COIN_SIZES ? COIN_SIZES[size as keyof typeof COIN_SIZES] : size;
   return (
     <div
-      className={`coin coin-${size} ${spin ? "coin-turn" : ""}`}
+      className={`coin coin-${s} ${spin ? "spin" : ""} ${float ? "float" : ""} ${className}`}
+      style={style}
       aria-hidden="true"
     >
-      <span className="coin-orbit" />
       <span className="coin-dollar">$</span>
-      <span className="coin-notch one" />
-      <span className="coin-notch two" />
     </div>
+  );
+}
+// Big money number with a lighter decimal part, like a banking app.
+export function Amount({
+  base,
+  currency = "USDC",
+  className = "",
+  hidden = false,
+}: {
+  base: string;
+  currency?: string;
+  className?: string;
+  hidden?: boolean;
+}) {
+  const n = BigInt(base),
+    whole = (n / 1000000n).toLocaleString("en-US"),
+    dec = ((n % 1000000n) / 10000n).toString().padStart(2, "0");
+  return (
+    <span className={`amount ${className}`}>
+      {hidden ? "••••" : whole}
+      {!hidden && <span className="dec">.{dec}</span>}
+      {currency && <span className="cur">{currency}</span>}
+    </span>
   );
 }
 export function PageTitle({
@@ -207,11 +237,13 @@ export function HoldButton({
   disabled = false,
   busy = false,
   label = "Hold to claim",
+  variant = "bar",
 }: {
   onClaim: () => void;
   disabled?: boolean;
   busy?: boolean;
   label?: string;
+  variant?: "bar" | "ring";
 }) {
   const [progress, setProgress] = useState(0);
   const frame = useRef(0);
@@ -258,41 +290,70 @@ export function HoldButton({
     };
     frame.current = requestAnimationFrame(tick);
   };
+  const events = {
+    disabled: disabled || busy,
+    onPointerDown: (e: React.PointerEvent<HTMLButtonElement>) => {
+      e.currentTarget.setPointerCapture(e.pointerId);
+      begin();
+    },
+    onPointerUp: stop,
+    onPointerCancel: stop,
+    onBlur: stop,
+    onPointerLeave: stop,
+    onContextMenu: (e: React.MouseEvent) => e.preventDefault(),
+    onKeyDown: (e: React.KeyboardEvent) => {
+      if (e.key === " " || e.key === "Enter") {
+        e.preventDefault();
+        if (!e.repeat) begin();
+      }
+      if (e.key === "Escape") stop();
+    },
+    onKeyUp: (e: React.KeyboardEvent) => {
+      if (e.key === " " || e.key === "Enter") stop();
+    },
+    "aria-describedby": "hold-instructions",
+  };
+  const text = busy ? "Confirming on Arc…" : progress > 0 ? "Keep holding…" : label;
+  if (variant === "ring") {
+    const C = 2 * Math.PI * 43;
+    return (
+      <div className="hold-ring-wrap">
+        <button
+          className={`hold-ring ${progress > 0 ? "holding" : ""} ${busy ? "busy" : ""}`}
+          aria-label={text}
+          {...events}
+        >
+          <svg viewBox="0 0 92 92" aria-hidden="true">
+            <circle className="track" cx="46" cy="46" r="43" fill="none" strokeWidth="4" />
+            <circle
+              className="bar"
+              cx="46"
+              cy="46"
+              r="43"
+              fill="none"
+              strokeWidth="4"
+              strokeLinecap="round"
+              strokeDasharray={C}
+              strokeDashoffset={C * (1 - (busy ? 1 : progress))}
+            />
+          </svg>
+          <span className="hold-ring-core">
+            <Coin size="sm" />
+          </span>
+        </button>
+        <span className="hold-ring-label" aria-hidden="true">{text}</span>
+        <span id="hold-instructions" className="sr-only">
+          Hold for 1.2 seconds. Keyboard: hold Space or Enter.
+        </span>
+      </div>
+    );
+  }
   return (
     <div className="hold-wrap">
-      <button
-        className="button primary hold-button"
-        disabled={disabled || busy}
-        onPointerDown={(e) => {
-          e.currentTarget.setPointerCapture(e.pointerId);
-          begin();
-        }}
-        onPointerUp={stop}
-        onPointerCancel={stop}
-        onBlur={stop}
-        onPointerLeave={stop}
-        onKeyDown={(e) => {
-          if (e.key === " " || e.key === "Enter") {
-            e.preventDefault();
-            if (!e.repeat) begin();
-          }
-          if (e.key === "Escape") stop();
-        }}
-        onKeyUp={(e) => {
-          if (e.key === " " || e.key === "Enter") stop();
-        }}
-        aria-describedby="hold-instructions"
-      >
-        <span
-          className="hold-progress"
-          style={{ width: `${progress * 100}%` }}
-        />
+      <button className="button primary hold-button" {...events}>
+        <span className="hold-progress" style={{ width: `${progress * 100}%` }} />
         <span>
-          {busy
-            ? "Confirming your find…"
-            : progress > 0
-              ? "Keep holding…"
-              : label}
+          {text}
           <CircleDollarSign size={21} />
         </span>
       </button>
