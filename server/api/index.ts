@@ -43,6 +43,7 @@ const Claimed = parseAbiItem("event Claimed(bytes32 indexed campaignId, bytes32 
 
 type CampaignRecord = {
   campaignId: Hex; title: string; creatorName: string; creator?: Hex; total: string;
+  startsAt?: number; // Money Drops: hidden from the map and unclaimable until then
   endsAt: number; onePerWallet: boolean; dropIds: Hex[]; active: boolean; createTx?: Hex;
 };
 
@@ -88,6 +89,7 @@ async function authoriseClaim(req: Request, body: Record<string, unknown>, ip: s
   const [c, d] = await Promise.all([getCampaign(campaignId ?? ""), getDrop(dropId ?? "")]);
   if (!c || !d || d.campaignId.toLowerCase() !== c.campaignId.toLowerCase() || !c.active) return fail(404, "not_found");
   if (c.endsAt <= Date.now() / 1000) return fail(400, "campaign_ended");
+  if (c.startsAt && c.startsAt > Date.now() / 1000) return fail(400, "not_started", "this Money Drop isn't live yet");
   if (d.claimed || d.reported) return fail(400, "already_claimed");
   // Prize drops: the email comes only from a verified session, never from the request body.
   const verified = d.kind === "prize" ? verifySession(sessionFrom(req, body as { session?: string }), SESSION_SECRET) : null;
@@ -123,7 +125,7 @@ async function route(req: Request): Promise<Response> {
       const d = await getDrop(id);
       if (!d || d.claimed || d.reported || distanceM(lat, lng, d.lat!, d.lng!) > 5000) continue;
       const c = await getCampaign(d.campaignId);
-      if (c?.active && c.endsAt > now) out.push(toPublic(d, c.creatorName, c.endsAt, { lat, lng }));
+      if (c?.active && c.endsAt > now && !(c.startsAt && c.startsAt > now)) out.push(toPublic(d, c.creatorName, c.endsAt, { lat, lng }));
     }
     return json(out);
   }
@@ -131,7 +133,8 @@ async function route(req: Request): Promise<Response> {
   // POST /api/campaigns
   if (req.method === "POST" && parts[0] === "campaigns" && parts.length === 1) {
     if (await limited(`create:${ip}`, 20, 3600)) return fail(429, "rate_limited");
-    const { title, creatorName, endsAt, onePerWallet = true, drops } = body;
+    const { title, creatorName, endsAt, onePerWallet = true, drops, startsAt } = body;
+    if (startsAt !== undefined && (!Number.isInteger(startsAt) || startsAt >= endsAt)) return fail(400, "bad_request", "startsAt must be before endsAt");
     if (!title || !creatorName || !Number.isInteger(endsAt) || endsAt <= Date.now() / 1000 || !Array.isArray(drops) || !drops.length || drops.length > 200)
       return fail(400, "bad_request", "title, creatorName, future endsAt and 1-200 drops required");
     const campaignId = toHex(randomBytes(32));
@@ -157,7 +160,7 @@ async function route(req: Request): Promise<Response> {
       if (kind === "prize") winners.push({ email: normaliseEmail(d.email), amount: amount.toString() });
     }
     const total = records.reduce((s, d) => s + BigInt(d.amount), 0n).toString();
-    const c: CampaignRecord = { campaignId, title, creatorName, total, endsAt, onePerWallet: !!onePerWallet, dropIds: records.map((d) => d.dropId), active: false };
+    const c: CampaignRecord = { campaignId, title, creatorName, total, startsAt, endsAt, onePerWallet: !!onePerWallet, dropIds: records.map((d) => d.dropId), active: false };
     await Promise.all([
       redis.set(`c:${campaignId}`, c),
       ...records.map((d) => redis.set(`d:${d.dropId}`, d)),
