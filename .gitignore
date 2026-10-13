@@ -6,3 +6,4 @@ cache/
 broadcast/
 .next/
 .arc-studio/
+.vercel
