@@ -12,6 +12,7 @@
   "dependencies": {
     "@fontsource/dm-sans": "^5.2.8",
     "@fontsource/manrope": "^5.2.8",
+    "@react-three/fiber": "^9.8.1",
     "@zxing/browser": "^0.1.5",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.468.0",
@@ -19,7 +20,8 @@
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-leaflet": "^5.0.0",
-    "react-qr-code": "^2.0.18"
+    "react-qr-code": "^2.0.18",
+    "three": "^0.186.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.0",
@@ -28,6 +30,7 @@
     "@types/node": "^22.10.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "@types/three": "^0.186.0",
     "jsdom": "^29.1.1",
     "prettier": "^3.9.10",
     "tailwindcss": "^4.1.0",

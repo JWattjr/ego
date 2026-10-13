@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowUp, Flag, LocateFixed, Navigation, X } from "lucide-react";
 import { DropMap } from "@/components/map-loader";
 import { Coin, ErrorMessage, HoldButton, Loading, ReportDialog } from "@/components/ui";
+import { Coin3D } from "@/components/coin3d-loader";
 import { DEMO_CAMPAIGN, getDrop, reportLocation, simulateStep, simulationStart, USE_MOCKS } from "@/lib/api";
 import { bearing, money } from "@/lib/format";
 import { useClaim, usePosition } from "@/lib/hooks";
@@ -53,9 +54,7 @@ function ClaimScene({
         <span style={{ width: 42 }} />
       </div>
       <div className="scene-center">
-        <div className="scene-coin">
-          <Coin size="xl" spin float />
-        </div>
+        <Coin3D size={260} entrance="drop" />
         <div className="ground-ring" />
       </div>
       <div className="scene-bottom">

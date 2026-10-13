@@ -795,3 +795,6 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: color-m
 .step-indicator span.current { color: var(--blue); }
 .step-indicator span.current::before { background: var(--blue); }
 .amount-input input::placeholder, .entry-input input::placeholder { font-size: 17px; font-weight: 600; letter-spacing: 0; color: var(--ink-3); }
+.coin3d { position: relative; z-index: 2; filter: drop-shadow(0 24px 30px rgba(8, 40, 120, 0.35)); }
+.coin3d canvas { touch-action: pan-y; }
+.scene-center .coin3d + .ground-ring { margin-top: -18px; }

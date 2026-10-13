@@ -6,6 +6,7 @@ import { getFound, USE_MOCKS } from "@/lib/api";
 import type { FoundView } from "@/lib/types";
 import { money } from "@/lib/format";
 import { Coin, CollectibleCard, ErrorMessage, Loading } from "@/components/ui";
+import { Coin3D } from "@/components/coin3d-loader";
 
 // One celebratory burst of coins: shown once per find, so a little delight is earned.
 const BURST = Array.from({ length: 10 }, (_, i) => {
@@ -55,7 +56,7 @@ export default function FoundPage({ params }: { params: Promise<{ dropId: string
       </div>
       <div className="scene-center">
         <div className="scene-coin" style={{ position: "relative" }}>
-          <Coin size="lg" spin />
+          <Coin3D size={210} />
           <div className="burst" aria-hidden="true">
             {BURST.map((b, i) => (
               <Coin key={i} size="sm" style={{ "--x": b.x, "--y": b.y, "--r": b.r, animationDelay: b.d } as React.CSSProperties} />
