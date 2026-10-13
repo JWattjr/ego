@@ -1,8 +1,10 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import L from "leaflet";
 import { Circle, CircleMarker, MapContainer, Marker, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import type { DropPublic, Position } from "@/lib/types";
+import { egoMapStyle } from "@/lib/map-style";
+import "maplibre-gl/dist/maplibre-gl.css";
 import { ENUGU, money } from "@/lib/format";
 
 const coinHtml = (label?: string, cls = "") =>
@@ -12,6 +14,30 @@ const coinHtml = (label?: string, cls = "") =>
 const coinIcon = (label?: string, cls = "") =>
   L.divIcon({ className: "coin-pin", html: coinHtml(label, cls), iconSize: [0, 0] });
 const meIcon = L.divIcon({ className: "coin-pin", html: '<div class="me-pin"></div>', iconSize: [0, 0] });
+
+// Crisp vector base map (MapLibre inside Leaflet). Falls back to raster OSM tiles if WebGL or the style fails.
+function VectorBase() {
+  const map = useMap();
+  const [failed, setFailed] = useState(false);
+  useEffect(() => {
+    let layer: L.Layer | null = null, live = true;
+    Promise.all([egoMapStyle(), import("@maplibre/maplibre-gl-leaflet")])
+      .then(([style, mod]) => {
+        if (!live) return;
+        layer = mod.maplibreGL({ style, interactive: false } as never);
+        layer.addTo(map);
+        // Dev only: lets tooling force a draw while the tab is hidden.
+        if (process.env.NODE_ENV === "development") (window as unknown as { __egoMap?: unknown }).__egoMap = (layer as unknown as { getMaplibreMap(): unknown }).getMaplibreMap();
+        map.attributionControl?.addAttribution('&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> · <a href="https://openfreemap.org">OpenFreeMap</a>');
+      })
+      .catch(() => live && setFailed(true));
+    return () => {
+      live = false;
+      if (layer) map.removeLayer(layer);
+    };
+  }, [map]);
+  return failed ? <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' url="https://tile.openstreetmap.org/{z}/{x}/{y}.png" /> : null;
+}
 
 // offsetY > 0 keeps the focus point above a bottom sheet that covers the lower map.
 function Focus({ center, offsetY = 0 }: { center: { lat: number; lng: number }; offsetY?: number }) {
@@ -77,11 +103,7 @@ export default function DropMap({
       attributionControl
       aria-label="Map of nearby drops"
     >
-      {/* Standard OSM tiles, softened in CSS (.leaflet-tile-pane) so the coins carry the colour. */}
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
+      <VectorBase />
       <Focus center={center} offsetY={offsetY} />
       <Picker onPick={onPick} />
       {drops

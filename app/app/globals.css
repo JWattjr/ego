@@ -499,7 +499,6 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: color-m
 .map-screen { position: absolute; inset: 0; }
 .leaflet-container { isolation: isolate; z-index: 0; }
 .leaflet-map, .map-screen .leaflet-container { width: 100%; height: 100%; background: #eef1f4; font-family: var(--font); }
-.leaflet-tile-pane { filter: saturate(0.55) brightness(1.06) contrast(0.92); }
 .leaflet-control-attribution { font-size: 9px !important; background: rgba(255, 255, 255, 0.7) !important; border-radius: 8px 0 0 0; }
 .map-top { position: absolute; z-index: 500; left: 14px; right: 14px; top: 14px; display: flex; gap: 10px; align-items: center; }
 .map-campaign {
@@ -975,3 +974,7 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: color-m
 .row-icon.in { background: var(--green-soft); color: var(--green); }
 .row-icon.out { background: var(--surface-2); color: var(--ink-2); }
 .amount-in { color: var(--green); }
+
+/* Vector map: the MapLibre canvas sits in Leaflet's tile pane */
+.leaflet-gl-layer { z-index: 1; }
+.maplibregl-ctrl-attrib { display: none; }
