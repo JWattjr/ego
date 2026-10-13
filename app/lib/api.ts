@@ -8,6 +8,8 @@ import type {
   Deposit,
   DropKind,
   DropPublic,
+  EmailSession,
+  Prize,
   FoundView,
   Position,
   Receipt,
@@ -42,12 +44,13 @@ export class ApiError extends Error {
     this.name = "ApiError";
   }
 }
-async function request<T>(path: string, body?: unknown): Promise<T> {
+export async function request<T>(path: string, body?: unknown, session?: string): Promise<T> {
   const response = await fetch(`${BASE_URL}${path}`, {
     method: body === undefined ? "GET" : "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...(session ? { Authorization: `Bearer ${session}` } : {}) },
     ...(body === undefined ? {} : { body: JSON.stringify(body) }),
-    credentials: "include",
+    // No cookies: sessions travel in the Authorization header, so the API can allow any origin.
+    credentials: "omit",
     cache: "no-store",
   });
   const data = await response.json();
@@ -65,7 +68,7 @@ type MockCampaign = {
   active: boolean;
   privateProofs: Record<
     string,
-    { lat?: number; lng?: number; code?: string; answer?: string }
+    { lat?: number; lng?: number; code?: string; answer?: string; email?: string }
   >;
 };
 type MockState = {
@@ -533,12 +536,12 @@ export async function createCampaign(
       (d) =>
         !/^\d+$/.test(d.amount) ||
         BigInt(d.amount) < 1000000n ||
-        BigInt(d.amount) > 5000000n,
+        BigInt(d.amount) > (d.kind === "prize" ? 10000000000n : 5000000n),
     )
   )
     throw new ApiError(
       "invalid_amount",
-      "Keep every drop between 1 and 5 USDC.",
+      "Keep public drops between 1 and 5 USDC, and prizes up to 10,000 USDC.",
     );
   if (
     input.drops.some(
@@ -577,6 +580,7 @@ export async function createCampaign(
         lng: d.lng,
         code: d.code,
         answer: d.answer,
+        email: d.email?.trim().toLowerCase(),
       }),
   );
   state().campaigns.push({
@@ -742,4 +746,116 @@ export function simulateStep(drop: DropPublic, position: Position): Position {
     lng: position.lng + (target.lng! - position.lng) * fraction,
     accuracyM: 5,
   };
+}
+
+/* ───────────── Prizes: money locked for a named winner, claimed by email ───────────── */
+const SESSION_KEY = "ego.session";
+const DEMO_PRIZE_CAMPAIGN = `0x${"3".repeat(64)}`;
+export const DEMO_EMAIL_CODE = "123456";
+
+export function getEmailSession(): EmailSession | null {
+  if (typeof window === "undefined") return null;
+  try {
+    return JSON.parse(localStorage.getItem(SESSION_KEY) ?? "null") as EmailSession | null;
+  } catch {
+    return null;
+  }
+}
+export function signOutEmail() {
+  try {
+    localStorage.removeItem(SESSION_KEY);
+  } catch {
+    /* storage is optional */
+  }
+}
+export async function startEmailSignIn(email: string): Promise<void> {
+  if (!USE_MOCKS) return void (await request("/api/auth/email/start", { email }));
+  await wait();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) throw new ApiError("bad_request", "Enter a valid email.");
+}
+export async function verifyEmailCode(email: string, code: string): Promise<EmailSession> {
+  let session: string;
+  if (USE_MOCKS) {
+    await wait();
+    if (code.trim() !== DEMO_EMAIL_CODE) throw new ApiError("wrong_code", `That code isn't right. In demo mode it's ${DEMO_EMAIL_CODE}.`);
+    session = "demo";
+  } else session = (await request<{ session: string }>("/api/auth/email/verify", { email, code: code.trim() })).session;
+  const value = { session, email: email.trim().toLowerCase() };
+  try {
+    localStorage.setItem(SESSION_KEY, JSON.stringify(value));
+  } catch {
+    /* the session then lasts only for this page */
+  }
+  return value;
+}
+
+// Demo mode: one sample prize for whoever signs in, plus any prizes created on this device for that email.
+function demoPrizeCampaign(): MockCampaign {
+  let c = state().campaigns.find((x) => x.campaign.campaignId === DEMO_PRIZE_CAMPAIGN);
+  if (!c) {
+    const endsAt = now() + 86400 * 14;
+    c = {
+      campaign: {
+        campaignId: DEMO_PRIZE_CAMPAIGN, title: "Arc Builders Bounty · Best map UX", creatorName: "Arc Builders",
+        creator: "0x0000000000000000000000000000000000000A2C", total: "25000000", remaining: "25000000",
+        endsAt, onePerWallet: false, drops: 1, dropsLeft: 1,
+      },
+      drops: [{ campaignId: DEMO_PRIZE_CAMPAIGN, dropId: id(301), kind: "prize", amount: "25000000", title: "Winner · Best map UX", creatorName: "Arc Builders", endsAt, claimed: false }],
+      active: true,
+      privateProofs: { [id(301)]: { email: "*" } },
+    };
+    state().campaigns.push(c);
+    save();
+  }
+  return c;
+}
+export async function getPrizes(): Promise<Prize[]> {
+  const s = getEmailSession();
+  if (!s) throw new ApiError("sign_in", "Verify your email to see your prizes.");
+  if (!USE_MOCKS) return request<Prize[]>("/api/prizes", undefined, s.session);
+  await wait();
+  demoPrizeCampaign();
+  return state().campaigns
+    .filter((c) => c.active)
+    .flatMap((c) =>
+      c.drops
+        .filter((d) => d.kind === "prize" && ["*", s.email].includes(c.privateProofs[d.dropId]?.email ?? ""))
+        .map((d) => ({ ...d, campaignTitle: c.campaign.title })),
+    );
+}
+// The server checks the email session, signs, submits the claim and pays the gas.
+export async function claimPrize(prize: Prize, to: string): Promise<string> {
+  const s = getEmailSession();
+  if (!s) throw new ApiError("sign_in", "Verify your email first.");
+  if (!/^0x[0-9a-fA-F]{40}$/.test(to)) throw new ApiError("bad_request", "Enter a valid wallet address (0x…).");
+  const started = performance.now();
+  let receipt: { explorerUrl: string; confirmedMs?: number };
+  if (USE_MOCKS) {
+    await new Promise((r) => setTimeout(r, 650));
+    const c = campaignById(prize.campaignId);
+    const d = c.drops.find((x) => x.dropId === prize.dropId)!;
+    if (d.claimed) throw new ApiError("already_claimed", "This prize has already been claimed.");
+    d.claimed = true;
+    c.campaign.dropsLeft -= 1;
+    if (to.toLowerCase() === state().wallet.address.toLowerCase())
+      state().wallet.balance = (BigInt(state().wallet.balance) + BigInt(d.amount)).toString();
+    save();
+    receipt = { explorerUrl: `https://explorer.arc.io/tx/${tx()}` };
+  } else receipt = await request("/api/claims/relay", { campaignId: prize.campaignId, dropId: prize.dropId, to, proof: {} }, s.session);
+  const campaign = await getCampaign(prize.campaignId).catch(() => null);
+  const collectible: Collectible = { id: prize.campaignId, title: prize.campaignTitle, creatorName: prize.creatorName, kind: "prize", earnedAt: now() };
+  if (USE_MOCKS) {
+    state().wallet.collectibles.unshift(collectible);
+    save();
+  }
+  rememberFound({
+    explorerUrl: receipt.explorerUrl,
+    confirmedMs: receipt.confirmedMs ?? Math.round(performance.now() - started),
+    drop: { ...prize, claimed: true },
+    campaign: campaign
+      ? { ...campaign, drops: campaign.drops.length }
+      : { campaignId: prize.campaignId, title: prize.campaignTitle, creatorName: prize.creatorName, creator: "", total: prize.amount, remaining: "0", endsAt: prize.endsAt, onePerWallet: false, drops: 1, dropsLeft: 0 },
+    collectible,
+  });
+  return prize.dropId;
 }

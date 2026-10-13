@@ -6,6 +6,8 @@ import {
   ArrowUpRight,
   ChevronRight,
   Compass,
+  Gift,
+  Trophy,
   Eye,
   EyeOff,
   Plus,
@@ -20,7 +22,8 @@ import { Amount, Coin, CollectibleCard, ErrorMessage, Loading, Safety } from "@/
 import { Coin3D } from "@/components/coin3d-loader";
 
 const ways = [
-  { href: "/enter/code", icon: Ticket, title: "Claim a bounty", sub: "Won something? Your prize is locked on Arc. Enter the code" },
+  { href: "/prizes", icon: Gift, title: "Prizes waiting for you", sub: "Won a hackathon or bounty? Claim it with your email" },
+  { href: "/enter/code", icon: Ticket, title: "Enter a code", sub: "From a giveaway, a post or a flyer" },
   { href: "/enter/qr", icon: QrCode, title: "Scan an event QR", sub: "Early birds catch the most" },
   { href: "/enter/puzzle", icon: Puzzle, title: "Solve a puzzle", sub: "Crack the riddle, keep the coin" },
 ];
@@ -118,6 +121,30 @@ export default function WalletHome() {
               <span className="row-end"><ChevronRight size={18} /></span>
             </Link>
           ))}
+        </div>
+      </section>
+
+      <section className="section rise rise-3">
+        <div className="section-title">
+          <h2>For organisers</h2>
+        </div>
+        <div className="list-card">
+          <Link href="/pay" className="list-row">
+            <span className="row-icon"><Trophy size={19} /></span>
+            <span className="row-main">
+              <strong>Pay winners</strong>
+              <span>Lock hackathon prizes and bounties on Arc; winners claim by email</span>
+            </span>
+            <span className="row-end"><ChevronRight size={18} /></span>
+          </Link>
+          <Link href="/create" className="list-row">
+            <span className="row-icon"><Plus size={19} /></span>
+            <span className="row-main">
+              <strong>Hide drops</strong>
+              <span>Map hunts, giveaway codes, event QR codes and puzzles</span>
+            </span>
+            <span className="row-end"><ChevronRight size={18} /></span>
+          </Link>
         </div>
       </section>
 

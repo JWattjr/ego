@@ -767,3 +767,38 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: color-m
 .balance-text { display: grid; gap: 4px; min-width: 0; }
 .balance .coin3d { margin: -14px -12px -14px 0; filter: drop-shadow(0 14px 18px rgba(8, 40, 120, 0.25)); }
 .balance .amount { font-size: clamp(44px, 13vw, 60px); }
+
+/* ───────────────────────── Prizes & Pay winners ───────────────────────── */
+.prize-hero { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 6px; }
+.prize-hero .coin3d { margin: -18px -10px -18px -18px; }
+.prize-hero h1 { font-size: 28px; font-weight: 800; line-height: 1.08; margin: 4px 0 6px; }
+.prize-hero p { font-size: 14px; color: var(--ink-2); }
+.code-input { font-family: var(--display); font-size: 28px; font-weight: 800; letter-spacing: 0.4em; text-align: center; }
+.prize-account { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.prize-account .pill { max-width: 70%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.prize-total { display: grid; gap: 2px; padding: 18px; border-radius: var(--r); color: #fff; background: linear-gradient(150deg, #3d7bff, var(--blue-deep)); box-shadow: 0 16px 34px rgba(31, 107, 255, 0.32); }
+.prize-total span { font-size: 13px; font-weight: 600; opacity: 0.85; }
+.prize-total .amount { font-size: 44px; color: #fff; }
+.prize-total .amount .dec, .prize-total .amount .cur { color: rgba(255, 255, 255, 0.7); }
+.prize-list { display: grid; gap: 12px; }
+.prize-card { display: grid; gap: 14px; padding: 16px; border-radius: var(--r); background: var(--surface); box-shadow: var(--shadow); }
+.prize-card.claimed { opacity: 0.72; }
+.prize-card-top { display: flex; align-items: center; gap: 12px; }
+.prize-card-bottom { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.prize-card-bottom .amount { font-size: 30px; }
+.prize-claim { width: auto; height: 44px; padding: 0 22px; }
+.winners { padding: 6px; }
+.winner-row { display: grid; grid-template-columns: auto 1fr 92px auto; align-items: center; gap: 8px; padding: 6px; }
+.winner-row input { padding: 11px 12px; border-radius: 12px; font-size: 15px; box-shadow: none; }
+.winner-amount { text-align: right; font-weight: 700; }
+.winner-row .icon-button { width: 36px; height: 36px; box-shadow: none; background: var(--surface-2); }
+.pay-summary { display: grid; gap: 12px; }
+.pay-summary .amount { font-size: 40px; }
+.pay-done { display: grid; justify-items: center; text-align: center; gap: 12px; padding: 28px 20px; }
+.pay-done h1 { font-size: 26px; font-weight: 800; }
+.pay-done .amount { font-size: 44px; }
+.pay-done p { color: var(--ink-2); font-size: 14px; }
+.pay-done-icon { width: 60px; height: 60px; border-radius: 50%; display: grid; place-items: center; color: #fff; background: var(--green); box-shadow: 0 10px 24px rgba(18, 161, 80, 0.35); animation: dialog-in 420ms var(--ease-out); }
+.collectible-art.art-prize { background: radial-gradient(circle at 50% 40%, #fff6dc, #ffe1a1 50%, #f6c25b); }
+.form-columns > *, .form-columns input { min-width: 0; }
+.pay-summary .small-label { display: block; margin-bottom: 2px; }

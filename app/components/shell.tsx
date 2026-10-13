@@ -1,14 +1,14 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Compass, Map, Plus, Wallet } from "lucide-react";
+import { Gift, Map, Plus, Wallet } from "lucide-react";
 import { USE_MOCKS } from "@/lib/api";
 
 const tabs = [
   { href: "/", label: "Wallet", icon: Wallet, match: (p: string) => p === "/" || p.startsWith("/wallet") },
   { href: "/map", label: "Explore", icon: Map, match: (p: string) => p.startsWith("/map") },
-  { href: "/enter/code", label: "Find", icon: Compass, match: (p: string) => p.startsWith("/enter") },
-  { href: "/create", label: "Drop", icon: Plus, match: (p: string) => p.startsWith("/create") },
+  { href: "/prizes", label: "Prizes", icon: Gift, match: (p: string) => p.startsWith("/prizes") || p.startsWith("/enter") },
+  { href: "/pay", label: "Create", icon: Plus, match: (p: string) => p.startsWith("/pay") || p.startsWith("/create") },
 ];
 
 export function Shell({ children }: { children: React.ReactNode }) {

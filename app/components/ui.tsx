@@ -208,7 +208,7 @@ export function CollectibleCard({
         <span className="art-dot dot-two" />
       </div>
       <div className="collectible-copy">
-        <span className="small-label">{item.kind === "code" ? "bounty" : item.kind} drop · on Arc</span>
+        <span className="small-label">{item.kind === "prize" ? "prize" : `${item.kind} drop`} · on Arc</span>
         <h3>{item.title}</h3>
         <p>From {item.creatorName}</p>
         <span className="collectible-stamp">

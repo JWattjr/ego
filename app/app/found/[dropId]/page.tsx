@@ -33,8 +33,11 @@ export default function FoundPage({ params }: { params: Promise<{ dropId: string
     );
 
   const amount = money(view.drop.amount);
+  const prize = view.drop.kind === "prize";
   const share = async () => {
-    const text = `I just found ${amount} USDC hidden in ${view.drop.title} on Ego. Confirmed on Arc in ${(view.confirmedMs / 1000).toFixed(1)} s.`;
+    const text = prize
+      ? `I just claimed my ${amount} USDC prize from ${view.drop.creatorName} on Ego. Paid on Arc in ${(view.confirmedMs / 1000).toFixed(1)} s.`
+      : `I just found ${amount} USDC hidden in ${view.drop.title} on Ego. Confirmed on Arc in ${(view.confirmedMs / 1000).toFixed(1)} s.`;
     try {
       if (navigator.share) await navigator.share({ text, url: view.explorerUrl });
       else {
@@ -51,7 +54,7 @@ export default function FoundPage({ params }: { params: Promise<{ dropId: string
       <span className="beam" />
       <div className="scene-top">
         <span />
-        <span className="here-pill">Found</span>
+        <span className="here-pill">{prize ? "Prize claimed" : "Found"}</span>
         <span />
       </div>
       <div className="scene-center">
@@ -68,30 +71,32 @@ export default function FoundPage({ params }: { params: Promise<{ dropId: string
       <section className="found-sheet" aria-labelledby="found-title">
         <span className="found-badge"><Coin size="md" /></span>
         <div className="found-title">
-          <h1 id="found-title">You found {amount} USDC</h1>
+          <h1 id="found-title">You {prize ? "won" : "found"} {amount} USDC</h1>
           <p>{amount} USDC from {view.drop.creatorName}</p>
           <span className="in-wallet"><Check size={14} /> In your wallet</span>
         </div>
         <dl className="found-facts">
           <div>
-            <dt>Found in</dt>
-            <dd>{view.drop.title}</dd>
+            <dt>{prize ? "Prize" : "Found in"}</dt>
+            <dd>{prize ? view.campaign.title : view.drop.title}</dd>
           </div>
           <div>
             <dt>Confirmed in</dt>
             <dd><Zap size={14} color="var(--blue)" /> {(view.confirmedMs / 1000).toFixed(1)} seconds{USE_MOCKS ? " (demo)" : ""}</dd>
           </div>
-          <div>
-            <dt>Still hidden</dt>
-            <dd>{view.campaign.dropsLeft} {view.campaign.dropsLeft === 1 ? "drop" : "drops"}</dd>
-          </div>
+          {!prize && (
+            <div>
+              <dt>Still hidden</dt>
+              <dd>{view.campaign.dropsLeft} {view.campaign.dropsLeft === 1 ? "drop" : "drops"}</dd>
+            </div>
+          )}
         </dl>
         <CollectibleCard item={view.collectible} />
         <div className="found-actions">
           <button className="button secondary" onClick={share}>
             <Share2 size={18} /> {shared ? "Copied" : "Share"}
           </button>
-          <Link href="/map" className="button primary">Keep hunting</Link>
+          <Link href={prize ? "/prizes" : "/map"} className="button primary">{prize ? "My prizes" : "Keep hunting"}</Link>
         </div>
         <a href={view.explorerUrl} target="_blank" rel="noopener noreferrer" className="explorer-link">
           View on Arc Explorer <ExternalLink size={13} />

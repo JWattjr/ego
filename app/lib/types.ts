@@ -1,5 +1,5 @@
 // Mirrors section 2 of ../INTERFACE.md. Keep wire types exact.
-export type DropKind = "map" | "code" | "qr" | "puzzle";
+export type DropKind = "map" | "code" | "qr" | "puzzle" | "prize";
 export type DropPublic = {
   campaignId: string;
   dropId: string;
@@ -38,6 +38,7 @@ export type CreateDrop = {
   lng?: number;
   code?: string;
   answer?: string;
+  email?: string; // prize drops: the winner's email
 };
 export type CreateCampaignInput = {
   title: string;
@@ -76,3 +77,6 @@ export type FoundView = Receipt & {
   campaign: Campaign;
   collectible: Collectible;
 };
+// A prize locked for the signed-in email (GET /api/prizes).
+export type Prize = DropPublic & { campaignTitle: string };
+export type EmailSession = { session: string; email: string };
