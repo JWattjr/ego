@@ -9,7 +9,11 @@ const env = (k: string) => { const v = process.env[k]; if (!v) throw new Error(`
 const CHAIN_ID = Number(env("CHAIN_ID"));
 const CONTRACT = env("CONTRACT_ADDRESS") as Hex;
 const EXPLORER = env("EXPLORER_URL");
-const redis = Redis.fromEnv();
+// Vercel's Upstash integration names these KV_*; a direct Upstash setup names them UPSTASH_REDIS_*.
+const redis = new Redis({
+  url: process.env.KV_REST_API_URL ?? env("UPSTASH_REDIS_REST_URL"),
+  token: process.env.KV_REST_API_TOKEN ?? env("UPSTASH_REDIS_REST_TOKEN"),
+});
 const chain = createPublicClient({ transport: http(env("RPC_URL")) });
 const signer = privateKeyToAccount(env("SIGNER_PRIVATE_KEY") as Hex);
 
