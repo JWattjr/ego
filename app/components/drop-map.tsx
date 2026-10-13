@@ -71,7 +71,7 @@ export default function DropMap({
       zoomControl={false}
       scrollWheelZoom={false}
       attributionControl
-      aria-label="Map of Enugu"
+      aria-label="Map of nearby drops"
     >
       {/* Standard OSM tiles, softened in CSS (.leaflet-tile-pane) so the coins carry the colour. */}
       <TileLayer

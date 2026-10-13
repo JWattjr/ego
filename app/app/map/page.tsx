@@ -51,7 +51,7 @@ export default function MapPage() {
         <div className="map-campaign">
           <Coin size="sm" />
           <div>
-            <strong>{loading ? "Looking around Enugu…" : `${drops.length} drops hidden nearby`}</strong>
+            <strong>{loading ? "Looking around you…" : `${drops.length} drops hidden nearby`}</strong>
             <span>{money(total)} USDC waiting in public places</span>
           </div>
         </div>

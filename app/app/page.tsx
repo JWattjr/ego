@@ -19,7 +19,7 @@ import { money, shortAddress } from "@/lib/format";
 import { Amount, Coin, CollectibleCard, ErrorMessage, Loading, Safety } from "@/components/ui";
 
 const ways = [
-  { href: "/enter/code", icon: Ticket, title: "Enter a code", sub: "From a friend, a post or a flyer" },
+  { href: "/enter/code", icon: Ticket, title: "Claim a bounty", sub: "Won something? Your prize is locked on Arc. Enter the code" },
   { href: "/enter/qr", icon: QrCode, title: "Scan an event QR", sub: "Early birds catch the most" },
   { href: "/enter/puzzle", icon: Puzzle, title: "Solve a puzzle", sub: "Crack the riddle, keep the coin" },
 ];
@@ -60,7 +60,7 @@ export default function WalletHome() {
         <Link href="/map" className="drop-banner">
           <Coin size="sm" float />
           <div>
-            <strong>Enugu is hiding something good</strong>
+            <strong>Money is hiding near you</strong>
             <span>Open the map to look around</span>
           </div>
           <ChevronRight size={20} />

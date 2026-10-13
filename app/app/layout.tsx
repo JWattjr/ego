@@ -10,7 +10,7 @@ import { Shell } from "@/components/shell";
 export const metadata: Metadata = {
   title: { default: "Ego — good things nearby", template: "%s · Ego" },
   description:
-    "Discover small USDC drops, share a little joy, and explore Enugu on Arc.",
+    "A USDC wallet with fun ways to get paid: hunt drops on the map, claim bounties with a code, catch event drops. Programmable money on Arc.",
   applicationName: "Ego",
   manifest: "/manifest.webmanifest",
   appleWebApp: { capable: true, statusBarStyle: "default", title: "Ego" },

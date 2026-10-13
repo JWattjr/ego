@@ -4,7 +4,7 @@ export const DropMap = dynamic(() => import("./drop-map"), {
   ssr: false,
   loading: () => (
     <div className="map-placeholder" role="status">
-      Opening the Enugu map…
+      Opening the map…
     </div>
   ),
 });

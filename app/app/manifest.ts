@@ -3,7 +3,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Ego — good things nearby",
     short_name: "Ego",
-    description: "Small USDC discoveries in Enugu, on Arc.",
+    description: "Fun ways to get paid in USDC, on Arc.",
     start_url: "/",
     scope: "/",
     display: "standalone",

@@ -197,7 +197,7 @@ export default function CreatePage() {
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="A good day in Enugu"
+              placeholder="Hackathon bounty · Friday hunt"
               maxLength={80}
             />
           </label>
@@ -206,7 +206,7 @@ export default function CreatePage() {
             <input
               value={creatorName}
               onChange={(e) => setCreatorName(e.target.value)}
-              placeholder="Ada from Enugu"
+              placeholder="Your name or team"
               maxLength={50}
             />
           </label>
