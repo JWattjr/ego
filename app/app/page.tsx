@@ -3,6 +3,10 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
   ArrowDownLeft,
+  ArrowLeftRight,
+  Layers,
+  Percent,
+  Vault,
   ArrowUpRight,
   ChevronRight,
   Compass,
@@ -17,6 +21,7 @@ import {
 } from "lucide-react";
 import { connectWallet, getNearby, getWallet, USE_MOCKS } from "@/lib/api";
 import { MyCampaigns } from "@/components/my-campaigns";
+import { GROW } from "@/lib/grow";
 import type { DropPublic, WalletView } from "@/lib/types";
 import { money, shortAddress } from "@/lib/format";
 import { Amount, Coin, CollectibleCard, ErrorMessage, Loading, Safety } from "@/components/ui";
@@ -106,15 +111,39 @@ export default function WalletHome() {
           <span className="action-icon"><ArrowDownLeft size={22} /></span>
           Receive
         </Link>
-        <Link href="/map" className="action main">
-          <span className="action-icon"><Compass size={22} /></span>
-          Hunt
+        <Link href="/swap" className="action main">
+          <span className="action-icon"><ArrowLeftRight size={22} /></span>
+          Swap
         </Link>
         <Link href="/hide" className="action">
           <span className="action-icon"><Plus size={22} /></span>
           Hide
         </Link>
       </div>
+
+      <section className="section rise rise-3">
+        <Link href="/grow/vaults" className="section-title section-link">
+          <h2>Investments</h2>
+          <span>
+            {USE_MOCKS ? `$${(GROW.reduce((s, g) => s + Number(g.demoBalance), 0) / 1e6).toFixed(2)}` : "$0.00"} <ChevronRight size={15} />
+          </span>
+        </Link>
+        <div className="list-card">
+          {GROW.map((g) => {
+            const Icon = g.key === "lending" ? Percent : g.key === "pools" ? Layers : Vault;
+            return (
+              <Link key={g.key} href={`/grow/${g.key}`} className="list-row">
+                <span className="row-icon"><Icon size={18} /></span>
+                <span className="row-main">
+                  <strong>{g.title}</strong>
+                  <span>{g.short}</span>
+                </span>
+                <span className="row-end">{USE_MOCKS ? `$${(Number(g.demoBalance) / 1e6).toFixed(2)}` : <small>Soon</small>}</span>
+              </Link>
+            );
+          })}
+        </div>
+      </section>
 
       <section className="section rise rise-3">
         <div className="section-title">

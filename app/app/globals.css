@@ -188,7 +188,7 @@ p { margin: 0; }
 @keyframes coin-bob { 0%, 100% { translate: 0 0; } 50% { translate: 0 -10px; } }
 
 /* ───────────────────────── Generic layout ───────────────────────── */
-.page { position: relative; padding: 10px 20px 24px; display: grid; gap: 18px; align-content: start; }
+.page { position: relative; padding: 10px 20px 24px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; align-content: start; }
 .page-heading { display: grid; gap: 6px; padding-top: 6px; }
 .page-heading h1 { font-size: 30px; line-height: 1.08; font-weight: 800; }
 .page-heading p { color: var(--ink-2); }
@@ -850,3 +850,29 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: color-m
 .mine-refund { width: auto; height: 38px; padding: 0 14px; font-size: 13.5px; flex: none; }
 .mine-msg { font-size: 12.5px; color: var(--green); }
 .mine-msg a { color: var(--blue); display: inline-flex; align-items: center; gap: 2px; }
+
+/* ───────────────────────── Investments & Swap ───────────────────────── */
+.section-link { color: inherit; }
+.section-link span { display: inline-flex; align-items: center; gap: 2px; font-weight: 600; color: var(--ink-2); }
+.grow-hero { display: grid; gap: 12px; }
+.grow-hero .amount { font-size: 46px; }
+.grow-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.grow-stats div { display: grid; gap: 2px; padding: 10px 12px; border-radius: 14px; background: var(--surface-2); }
+.grow-stats span { font-size: 12px; color: var(--ink-3); }
+.grow-stats strong { font-size: 14px; }
+.grow-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.grow-info { display: grid; gap: 8px; }
+.grow-info h2 { font-size: 16px; display: flex; align-items: center; gap: 6px; }
+.grow-info p { font-size: 14px; color: var(--ink-2); }
+.grow-risk h2 svg { color: #c27a00; }
+.swap-box { position: relative; display: grid; gap: 6px; }
+.swap-leg { display: grid; gap: 8px; padding: 16px; border-radius: var(--r); background: var(--surface); box-shadow: var(--shadow); }
+.swap-leg > span { font-size: 13px; color: var(--ink-3); font-weight: 600; }
+.swap-leg > div { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.swap-leg input, .swap-leg output { font-family: var(--display); font-size: 34px; font-weight: 800; border: 0; box-shadow: none; padding: 0; background: transparent; min-width: 0; width: 100%; }
+.token { flex: none; display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px 6px 6px; border-radius: 999px; background: var(--surface-2); font-weight: 700; font-size: 14px; }
+.token::before { content: ""; width: 24px; height: 24px; border-radius: 50%; background: url("/coin/front.png") center / contain no-repeat; }
+.token-EURC::before { filter: hue-rotate(-45deg) saturate(0.95); }
+.swap-flip { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 40px; height: 40px; border-radius: 12px; border: 4px solid var(--bg-2); background: var(--surface); box-shadow: var(--shadow-sm); display: grid; place-items: center; color: var(--blue); z-index: 2; transition: transform 160ms var(--ease-out); }
+.swap-flip:active { transform: translate(-50%, -50%) rotate(180deg) scale(0.95); }
+.swap-facts { margin: 0; }
