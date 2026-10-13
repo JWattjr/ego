@@ -25,12 +25,12 @@ function faceTextures() {
     ctx.fillStyle = ink;
     ctx.lineCap = "round";
     ctx.lineWidth = 64;
-    for (const start of [-0.32, 0.68]) { // two arcs with gaps top and bottom, like the CSS coin
+    for (const centre of [0, 1]) { // two ~120° arcs, right and left, with gaps top and bottom
       ctx.beginPath();
-      ctx.arc(c, c, 330, (start + 0.12) * Math.PI, (start + 0.52) * Math.PI);
+      ctx.arc(c, c, 330, (centre - 0.33) * Math.PI, (centre + 0.33) * Math.PI);
       ctx.stroke();
     }
-    ctx.font = "800 470px Manrope, 'DM Sans', system-ui, sans-serif";
+    ctx.font = "700 470px Manrope, 'DM Sans', system-ui, sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText("$", c, c + 24);
@@ -91,22 +91,67 @@ function Studio() {
   );
 }
 
+// The coin itself as a plain three.js object, so the live canvas and still renders share it.
+export function createCoin() {
+  const { map, bump } = faceTextures();
+  const ridges = ridgeTexture();
+  const metal = { roughness: 0.34, metalness: 0.12, clearcoat: 1, clearcoatRoughness: 0.18, envMapIntensity: 1.1 };
+  const body = new THREE.MeshPhysicalMaterial({ color: BLUE, ...metal });
+  const edge = new THREE.MeshPhysicalMaterial({ color: "#2558c6", bumpMap: ridges, bumpScale: 1.5, ...metal });
+  const faceMat = new THREE.MeshPhysicalMaterial({ map, bumpMap: bump, bumpScale: 4, ...metal });
+  const face = new THREE.CircleGeometry(FACE_R + 0.002, 96);
+  const coin = new THREE.Group();
+  coin.rotation.x = Math.PI / 2; // lathe axis (Y) -> facing the camera (Z)
+  coin.add(new THREE.Mesh(new THREE.LatheGeometry(PROFILE, 160), body));
+  coin.add(new THREE.Mesh(new THREE.CylinderGeometry(R + 0.002, R + 0.002, 0.1, 160, 1, true), edge));
+  const front = new THREE.Mesh(face, faceMat);
+  front.position.y = FACE_Y;
+  front.rotation.x = -Math.PI / 2;
+  const back = new THREE.Mesh(face, faceMat);
+  back.position.y = -FACE_Y;
+  back.rotation.set(Math.PI / 2, 0, Math.PI);
+  coin.add(front, back);
+  return coin;
+}
+
+function addLights(scene: THREE.Scene) {
+  const key = new THREE.DirectionalLight("#ffffff", 1.6);
+  key.position.set(2.5, 3, 4);
+  const fill = new THREE.DirectionalLight("#bcd4ff", 0.35);
+  fill.position.set(-3, -1, 2);
+  scene.add(key, fill);
+}
+
+// One synchronous render of the coin at a fixed pose to a PNG data URL (no animation loop needed).
+export function renderCoinStill(pose: [number, number], px = 512) {
+  const canvas = document.createElement("canvas");
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, preserveDrawingBuffer: true });
+  renderer.setPixelRatio(1);
+  renderer.setSize(px, px, false);
+  renderer.toneMapping = THREE.NeutralToneMapping;
+  const scene = new THREE.Scene();
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+  addLights(scene);
+  const holder = new THREE.Group();
+  holder.add(createCoin());
+  holder.rotation.set(pose[0], pose[1], 0);
+  scene.add(holder);
+  const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 100);
+  camera.position.set(0, 0, 4.4);
+  renderer.render(scene, camera);
+  const url = canvas.toDataURL("image/png");
+  pmrem.dispose();
+  renderer.dispose();
+  return url;
+}
+
 function CoinMesh({ entrance, motion }: { entrance: CoinEntrance; motion: boolean }) {
   const spin = useRef<THREE.Group>(null);
   const drag = useRef({ active: false, lastX: 0, velocity: 0 });
   const enter = useRef({ y: entrance === "drop" ? 3 : 0, vy: 0, boost: entrance === "drop" ? 14 : 0 });
 
-  const { body, face, edge, faceMat } = useMemo(() => {
-    const { map, bump } = faceTextures();
-    const ridges = ridgeTexture();
-    const metal = { roughness: 0.34, metalness: 0.12, clearcoat: 1, clearcoatRoughness: 0.18, envMapIntensity: 1.1 };
-    return {
-      body: new THREE.MeshPhysicalMaterial({ color: BLUE, ...metal }),
-      edge: new THREE.MeshPhysicalMaterial({ color: "#2558c6", bumpMap: ridges, bumpScale: 1.5, ...metal }),
-      faceMat: new THREE.MeshPhysicalMaterial({ map, bumpMap: bump, bumpScale: 4, ...metal }),
-      face: new THREE.CircleGeometry(FACE_R + 0.002, 96),
-    };
-  }, []);
+  const coin = useMemo(createCoin, []);
 
   useFrame((state, dt) => {
     const g = spin.current;
@@ -147,16 +192,7 @@ function CoinMesh({ entrance, motion }: { entrance: CoinEntrance; motion: boolea
       onPointerUp={() => (drag.current.active = false)}
       onPointerCancel={() => (drag.current.active = false)}
     >
-      <group rotation={[Math.PI / 2, 0, 0]}>
-        <mesh material={body}>
-          <latheGeometry args={[PROFILE, 160]} />
-        </mesh>
-        <mesh material={edge}>
-          <cylinderGeometry args={[R + 0.002, R + 0.002, 0.1, 160, 1, true]} />
-        </mesh>
-        <mesh geometry={face} material={faceMat} position={[0, FACE_Y, 0]} rotation={[-Math.PI / 2, 0, 0]} />
-        <mesh geometry={face} material={faceMat} position={[0, -FACE_Y, 0]} rotation={[Math.PI / 2, 0, Math.PI]} />
-      </group>
+      <primitive object={coin} />
     </group>
   );
 }

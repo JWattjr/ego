@@ -17,6 +17,7 @@ import { getNearby, getWallet, USE_MOCKS } from "@/lib/api";
 import type { DropPublic, WalletView } from "@/lib/types";
 import { money, shortAddress } from "@/lib/format";
 import { Amount, Coin, CollectibleCard, ErrorMessage, Loading, Safety } from "@/components/ui";
+import { Coin3D } from "@/components/coin3d-loader";
 
 const ways = [
   { href: "/enter/code", icon: Ticket, title: "Claim a bounty", sub: "Won something? Your prize is locked on Arc. Enter the code" },
@@ -70,14 +71,17 @@ export default function WalletHome() {
       {error && <ErrorMessage message={error} onRetry={load} />}
 
       <section className="balance rise rise-1" aria-label="Your wallet">
-        <span className="balance-label">
-          {USE_MOCKS ? "Demo balance" : "Total balance"}
-          <button onClick={() => setHidden((h) => !h)} aria-label={hidden ? "Show balance" : "Hide balance"}>
-            {hidden ? <EyeOff size={16} /> : <Eye size={16} />}
-          </button>
-        </span>
-        {wallet ? <Amount base={wallet.balance} hidden={hidden} /> : <span className="amount">—</span>}
-        <span className="balance-address">{wallet?.address ? shortAddress(wallet.address) : "No wallet connected yet"}</span>
+        <div className="balance-text">
+          <span className="balance-label">
+            {USE_MOCKS ? "Demo balance" : "Total balance"}
+            <button onClick={() => setHidden((h) => !h)} aria-label={hidden ? "Show balance" : "Hide balance"}>
+              {hidden ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
+          </span>
+          {wallet ? <Amount base={wallet.balance} hidden={hidden} /> : <span className="amount">—</span>}
+          <span className="balance-address">{wallet?.address ? shortAddress(wallet.address) : "No wallet connected yet"}</span>
+        </div>
+        <Coin3D size={132} />
       </section>
 
       <div className="actions rise rise-2">
