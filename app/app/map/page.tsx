@@ -6,6 +6,7 @@ import { DropMap } from "@/components/map-loader";
 import {
   Coin,
   ErrorMessage,
+  FocusDialog,
   KindLabel,
   Loading,
   PageTitle,
@@ -77,7 +78,7 @@ export default function MapPage() {
         <div className="section-title">
           <h2>
             {drops.length
-              ? `${drops.length} reasons to step outside`
+              ? `${drops.length} ${drops.length === 1 ? "reason" : "reasons"} to step outside`
               : "A quiet corner, for now"}
           </h2>
         </div>
@@ -113,12 +114,10 @@ export default function MapPage() {
       <Safety compact />
       {selected && (
         <div className="sheet-backdrop" onClick={() => setSelected(null)}>
-          <section
+          <FocusDialog
             className="drop-sheet"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="drop-title"
-            onClick={(e) => e.stopPropagation()}
+            labelledBy="drop-title"
+            onClose={() => setSelected(null)}
           >
             <div className="sheet-handle" />
             <button
@@ -143,17 +142,26 @@ export default function MapPage() {
             >
               Start the hunt <ArrowRight size={20} />
             </Link>
-          </section>
+          </FocusDialog>
         </div>
       )}
       {report && selected && (
         <ReportDialog
           onClose={() => setReport(false)}
-          onConfirm={() => {
-            reportLocation(selected.dropId);
-            setDrops((ds) => ds.filter((d) => d.dropId !== selected.dropId));
-            setSelected(null);
-            setReport(false);
+          onConfirm={async () => {
+            try {
+              await reportLocation(selected.dropId);
+              setDrops((ds) => ds.filter((d) => d.dropId !== selected.dropId));
+              setSelected(null);
+              setReport(false);
+            } catch (e) {
+              setReport(false);
+              setError(
+                e instanceof Error
+                  ? e.message
+                  : "The report failed. Please try again.",
+              );
+            }
           }}
         />
       )}

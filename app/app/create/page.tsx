@@ -285,6 +285,10 @@ export default function CreatePage() {
                 Choose each drop, then tap the map to place it on a public
                 footpath or open public space.
               </p>
+              <p className="help-text">
+                Keyboard: focus the map and use arrow keys to move, then choose
+                “Place drop at map centre”.
+              </p>
               <div className="point-picker">
                 {Array.from({ length: count }, (_, i) => (
                   <button

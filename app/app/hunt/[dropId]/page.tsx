@@ -158,7 +158,7 @@ function Hunt({ dropId }: { dropId: string }) {
             {heading !== null ? (
               <Navigation
                 className="direction-arrow"
-                style={{ transform: `rotate(${direction}deg)` }}
+                style={{ transform: `rotate(${direction - 45}deg)` }}
                 size={42}
                 fill="currentColor"
               />
@@ -287,9 +287,18 @@ function Hunt({ dropId }: { dropId: string }) {
       {report && drop && (
         <ReportDialog
           onClose={() => setReport(false)}
-          onConfirm={() => {
-            reportLocation(drop.dropId);
-            router.push("/map");
+          onConfirm={async () => {
+            try {
+              await reportLocation(drop.dropId);
+              router.push("/map");
+            } catch (e) {
+              setReport(false);
+              setError(
+                e instanceof Error
+                  ? e.message
+                  : "The report failed. Please try again.",
+              );
+            }
           }}
         />
       )}

@@ -19,8 +19,23 @@ function Focus({ center }: { center: { lat: number; lng: number } }) {
   return null;
 }
 function Picker({ onPick }: { onPick?: (lat: number, lng: number) => void }) {
-  useMapEvents({ click: (e) => onPick?.(e.latlng.lat, e.latlng.lng) });
-  return null;
+  const map = useMapEvents({
+    click: (e) => onPick?.(e.latlng.lat, e.latlng.lng),
+  });
+  if (!onPick) return null;
+  return (
+    <button
+      type="button"
+      className="map-centre-button"
+      onClick={(e) => {
+        e.stopPropagation();
+        const centre = map.getCenter();
+        onPick(centre.lat, centre.lng);
+      }}
+    >
+      Place drop at map centre
+    </button>
+  );
 }
 export default function DropMap({
   drops = [],

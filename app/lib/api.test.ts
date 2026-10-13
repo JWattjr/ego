@@ -144,7 +144,7 @@ describe("location privacy and claims", () => {
   });
   it("hides a reported drop from the nearby list", async () => {
     const [drop] = await finish(api.getNearby());
-    api.reportLocation(drop.dropId);
+    await api.reportLocation(drop.dropId);
     expect(
       (await finish(api.getNearby())).some((d) => d.dropId === drop.dropId),
     ).toBe(false);
@@ -186,15 +186,13 @@ describe("create and integration boundaries", () => {
     vi.stubEnv("NEXT_PUBLIC_USE_MOCKS", "false");
     vi.resetModules();
     const real = await import("./api");
-    const fetch = vi
-      .fn()
-      .mockResolvedValue({
-        ok: false,
-        json: async () => ({
-          error: "rate_limited",
-          message: "Try again later.",
-        }),
-      });
+    const fetch = vi.fn().mockResolvedValue({
+      ok: false,
+      json: async () => ({
+        error: "rate_limited",
+        message: "Try again later.",
+      }),
+    });
     vi.stubGlobal("fetch", fetch);
     await expect(
       real.authorizeClaim({

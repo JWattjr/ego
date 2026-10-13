@@ -56,7 +56,7 @@ export type Deposit = {
   total: string;
   deposit: { to: string; amount: string };
 };
-export type Receipt = { confirmedMs: number; explorerUrl: string };
+export type Receipt = { explorerUrl: string };
 // App-only view models: these are not additional checking-server endpoints.
 export type Collectible = {
   id: string;
@@ -71,6 +71,7 @@ export type WalletView = {
   collectibles: Collectible[];
 };
 export type FoundView = Receipt & {
+  confirmedMs: number;
   drop: DropPublic;
   campaign: Campaign;
   collectible: Collectible;

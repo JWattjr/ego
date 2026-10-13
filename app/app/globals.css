@@ -1722,3 +1722,17 @@ legend {
     scroll-behavior: auto !important;
   }
 }
+.map-centre-button {
+  position: absolute;
+  z-index: 500;
+  right: 12px;
+  bottom: 26px;
+  background: white;
+  color: var(--blue);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 12px;
+  min-height: 44px;
+  font-size: 12px;
+  font-weight: 600;
+}

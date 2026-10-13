@@ -136,7 +136,21 @@ function Entry({ kind }: { kind: DropKind }) {
           Puzzle
         </Link>
       </nav>
-      {kind === "qr" && <QrScanner onRead={scanned} />}{" "}
+      {kind === "qr" && (
+        <>
+          <QrScanner onRead={scanned} />
+          <label className="entry-input">
+            {info.label}
+            <input
+              value={value}
+              onChange={(e) => scanned(e.target.value)}
+              placeholder={info.placeholder}
+              autoComplete="off"
+              autoCapitalize="off"
+            />
+          </label>
+        </>
+      )}
       {!campaignId || !dropId ? (
         <section className="form-stack">
           <p>
@@ -183,20 +197,18 @@ function Entry({ kind }: { kind: DropKind }) {
               <p>{drop.hint}</p>
             </div>
           )}
-          <label className="entry-input">
-            {info.label}
-            <input
-              value={value}
-              onChange={(e) =>
-                kind === "qr"
-                  ? scanned(e.target.value)
-                  : setValue(e.target.value)
-              }
-              placeholder={info.placeholder}
-              autoComplete="off"
-              autoCapitalize={kind === "puzzle" ? "sentences" : "characters"}
-            />
-          </label>
+          {kind !== "qr" && (
+            <label className="entry-input">
+              {info.label}
+              <input
+                value={value}
+                onChange={(e) => setValue(e.target.value)}
+                placeholder={info.placeholder}
+                autoComplete="off"
+                autoCapitalize={kind === "puzzle" ? "sentences" : "characters"}
+              />
+            </label>
+          )}
           {drop.claimed ? (
             <ErrorMessage message="This drop has already been collected. Try a different drop link." />
           ) : (

@@ -88,6 +88,7 @@ const submissions = new Map<
     amount: string;
     campaignId: string;
     txHash: string;
+    startedAt: number;
   }
 >();
 function seed(): MockState {
@@ -277,7 +278,7 @@ function publicDrop(
 export async function getNearby(position?: Position): Promise<DropPublic[]> {
   if (!USE_MOCKS)
     return request(
-      `/api/drops/nearby${position ? `?lat=${position.lat}&lng=${position.lng}` : ""}`,
+      `/api/drops/nearby?lat=${position?.lat ?? ENUGU.lat}&lng=${position?.lng ?? ENUGU.lng}`,
     );
   await wait();
   return state()
@@ -409,6 +410,7 @@ export async function submitClaim(input: {
   to: string;
   authorization: Authorization;
 }): Promise<string> {
+  const startedAt = Date.now();
   // TODO(wallet): submit EgoDrops.claim(campaignId, dropId, amount, to, deadline, sig)
   // using the Circle user-controlled wallet on ARC with sponsored gas; return its hash.
   if (!USE_MOCKS)
@@ -428,7 +430,12 @@ export async function submitClaim(input: {
   const existing = submissions.get(input.dropId);
   if (existing) return existing.txHash;
   const txHash = tx();
-  submissions.set(input.dropId, { ...input, amount: auth.amount, txHash });
+  submissions.set(input.dropId, {
+    ...input,
+    amount: auth.amount,
+    txHash,
+    startedAt,
+  });
   return txHash;
 }
 export async function confirmClaim(
@@ -443,7 +450,6 @@ export async function confirmClaim(
   const existing = state().found[dropId];
   if (existing)
     return {
-      confirmedMs: existing.confirmedMs,
       explorerUrl: existing.explorerUrl,
     };
   const submitted = submissions.get(dropId);
@@ -474,11 +480,11 @@ export async function confirmClaim(
   if (!state().wallet.collectibles.some((item) => item.id === collectible.id))
     state().wallet.collectibles.push(collectible);
   const receipt = {
-    confirmedMs: 420,
     explorerUrl: `https://explorer.arc.io/tx/${txHash}`,
   };
   state().found[dropId] = {
     ...receipt,
+    confirmedMs: Date.now() - submitted.startedAt,
     drop: publicDrop(c, d),
     campaign: { ...c.campaign },
     collectible,
@@ -488,11 +494,15 @@ export async function confirmClaim(
 }
 export async function getFound(dropId: string): Promise<FoundView | null> {
   // Receipt view is app state, not a new server endpoint.
-  if (USE_MOCKS) return state().found[dropId] ?? null;
   if (typeof window !== "undefined") {
-    const data = sessionStorage.getItem(`ego.found.${dropId}`);
-    return data ? (JSON.parse(data) as FoundView) : null;
+    try {
+      const data = sessionStorage.getItem(`ego.found.${dropId}`);
+      if (data) return JSON.parse(data) as FoundView;
+    } catch {
+      /* use the mock fallback when storage is unavailable */
+    }
   }
+  if (USE_MOCKS) return state().found[dropId] ?? null;
   return null;
 }
 export function rememberFound(view: FoundView) {
@@ -676,20 +686,28 @@ export async function sendMoney(
   const txHash = tx();
   return { txHash, explorerUrl: `https://explorer.arc.io/tx/${txHash}` };
 }
-export function reportLocation(dropId: string) {
-  // No report endpoint is specified. Hide on this device only until one is agreed.
+export async function reportLocation(dropId: string): Promise<void> {
+  if (!USE_MOCKS)
+    await request<{ ok: true }>(
+      `/api/drops/${encodeURIComponent(dropId)}/report`,
+      {},
+    );
   if (USE_MOCKS) {
     if (!state().reported.includes(dropId)) state().reported.push(dropId);
     save();
   }
   if (typeof window !== "undefined") {
-    const reports = JSON.parse(
-      localStorage.getItem("ego.hidden") ?? "[]",
-    ) as string[];
-    localStorage.setItem(
-      "ego.hidden",
-      JSON.stringify([...new Set([...reports, dropId])]),
-    );
+    try {
+      const reports = JSON.parse(
+        localStorage.getItem("ego.hidden") ?? "[]",
+      ) as string[];
+      localStorage.setItem(
+        "ego.hidden",
+        JSON.stringify([...new Set([...reports, dropId])]),
+      );
+    } catch {
+      /* the server report still succeeds if browser storage is unavailable */
+    }
   }
 }
 export function isReported(dropId: string) {

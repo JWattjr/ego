@@ -13,6 +13,34 @@ import {
   X,
 } from "lucide-react";
 import type { Collectible, DropKind } from "@/lib/types";
+import { useDialogFocus } from "./dialog-focus";
+
+export function FocusDialog({
+  children,
+  className,
+  labelledBy,
+  onClose,
+}: {
+  children: React.ReactNode;
+  className: string;
+  labelledBy: string;
+  onClose: () => void;
+}) {
+  const ref = useRef<HTMLElement>(null);
+  useDialogFocus(ref, onClose);
+  return (
+    <section
+      ref={ref}
+      className={className}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={labelledBy}
+      onClick={(e) => e.stopPropagation()}
+    >
+      {children}
+    </section>
+  );
+}
 
 export function Coin({
   size = "normal",
@@ -210,6 +238,9 @@ export function HoldButton({
   useEffect(() => {
     if (!busy) done.current = false;
   }, [busy]);
+  useEffect(() => {
+    if (disabled || busy) stop();
+  }, [disabled, busy, stop]);
   const begin = () => {
     if (disabled || busy || holding.current || done.current) return;
     holding.current = true;
@@ -238,6 +269,7 @@ export function HoldButton({
         }}
         onPointerUp={stop}
         onPointerCancel={stop}
+        onBlur={stop}
         onPointerLeave={stop}
         onKeyDown={(e) => {
           if (e.key === " " || e.key === "Enter") {
@@ -279,11 +311,10 @@ export function ReportDialog({
 }) {
   return (
     <div className="dialog-backdrop">
-      <section
+      <FocusDialog
         className="dialog"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="report-title"
+        labelledBy="report-title"
+        onClose={onClose}
       >
         <button
           className="icon-button dialog-close"
@@ -298,8 +329,8 @@ export function ReportDialog({
           Hide this drop from your map. Your safety matters more than any find.
         </p>
         <p className="help-text">
-          This prototype hides the location on this device. A moderation service
-          will be connected separately.
+          In demo mode, this hides the location on this device. Live reports go
+          to the checking server.
         </p>
         <button className="button primary" autoFocus onClick={onConfirm}>
           Report & hide this drop
@@ -307,7 +338,7 @@ export function ReportDialog({
         <button className="button secondary" onClick={onClose}>
           Keep this drop
         </button>
-      </section>
+      </FocusDialog>
     </div>
   );
 }

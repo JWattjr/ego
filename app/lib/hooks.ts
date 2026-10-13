@@ -49,7 +49,11 @@ export function useClaim(drop: DropPublic | null, proof: ClaimProof | null) {
     [busy, setBusy] = useState(false),
     [error, setError] = useState(""),
     [phase, setPhase] = useState("");
-  const pending = useRef<{ dropId: string; txHash: string } | null>(null);
+  const pending = useRef<{
+    dropId: string;
+    txHash: string;
+    startedAt: number;
+  } | null>(null);
   const locked = useRef(false);
   const claim = useCallback(async () => {
     if (!drop || !proof || locked.current) return;
@@ -72,22 +76,27 @@ export function useClaim(drop: DropPublic | null, proof: ClaimProof | null) {
           proof,
         });
         setPhase("Submitting the claim…");
+        const startedAt = performance.now();
         const txHash = await api.submitClaim({
           campaignId: drop.campaignId,
           dropId: drop.dropId,
           to: wallet.address,
           authorization,
         });
-        pending.current = { dropId: drop.dropId, txHash };
+        pending.current = { dropId: drop.dropId, txHash, startedAt };
       }
       setPhase("Waiting for the Arc receipt…");
       const receipt = await api.confirmClaim(
         drop.dropId,
         pending.current.txHash,
       );
+      const confirmedMs = Math.round(
+        performance.now() - pending.current.startedAt,
+      );
       const campaign = await api.getCampaign(drop.campaignId);
       api.rememberFound({
         ...receipt,
+        confirmedMs,
         drop,
         campaign: { ...campaign, drops: campaign.drops.length },
         collectible: {
