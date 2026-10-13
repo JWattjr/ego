@@ -84,9 +84,10 @@ type Campaign = {
 | `POST /api/campaigns` | `{ title, creatorName, endsAt, onePerWallet, drops: [{ kind, amount, title, hint?, lat?, lng?, code?, answer? }] }` | `{ campaignId, total, deposit: { to, amount } }` (the creator then calls `createCampaign` on-chain) |
 | `POST /api/campaigns/:campaignId/confirm` | `{ txHash }` | `Campaign` (the server checks the on-chain deposit, then activates the drops) |
 | `POST /api/claims` | `{ campaignId, dropId, to, proof }` where `proof` is `{ lat, lng, accuracyM }` for map, `{ code }` for code/qr, `{ answer }` for puzzle | `{ amount, deadline, sig }`. Errors: `too_far`, `wrong_code`, `already_claimed`, `campaign_ended`, `rate_limited` |
-| `POST /api/claims/:dropId/submitted` | `{ txHash }` | `{ confirmedMs, explorerUrl }`, where `confirmedMs` is measured from the Arc receipt (for the "Confirmed in 0.4 s" screen) |
+| `POST /api/claims/:dropId/submitted` | `{ txHash }` | `{ explorerUrl }`. The app measures "confirmed in X s" itself, from sending the tx to getting the receipt. |
+| `POST /api/drops/:dropId/report` | — | `{ ok: true }` (hides the drop from the map) |
 
-Errors are `{ error: string, message: string }` with HTTP 4xx.
+Errors are `{ error: string, message: string }` with HTTP 4xx. Each drop is capped at 5 USDC (`5000000`) by the server.
 
 ---
 
